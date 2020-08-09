@@ -1,0 +1,51 @@
+run:
+  timeout: 40s
+  tests: true
+
+linters-settings:
+  golint:
+    min-confidence: 0.3
+  gocyclo:
+    min-complexity: 9
+  gocognit:
+    min-complexity: 10
+  govet:
+    check-shadowing: true
+  errcheck:
+    asserts: true
+  wsl:
+    allow-assign-and-call: true
+    allow-cuddle-declarations: true
+    force-err-cuddling: true
+
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - gocritic
+    - gocyclo
+    - gosimple
+    - gocognit
+    - goimports
+    - golint
+    - gosec
+    - govet
+    - ineffassign
+    - staticcheck
+    - nakedret
+    - deadcode
+    - wsl
+
+issues:
+  exclude-rules:
+    # Exclude some linters from running on tests files.
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - gosec
+
+    # Exclude some gosec messages
+    - linters:
+        - gosec
+      text: "G104"
+  exclude-use-default: false
