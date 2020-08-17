@@ -1,4 +1,4 @@
-package clientStorage
+package storage
 
 import (
 	"context"
@@ -16,8 +16,6 @@ import (
 var (
 	// ErrClientNotFound when no Client was found
 	ErrClientNotFound = errors.New("client not found")
-	// ErrFieldsWrongLength when field names and values are not the same length
-	ErrFieldsWrongLength = errors.New("fields wrong length")
 
 	clientsTableName = environment.GetString("CLIENTS_TABLE_NAME", "clients")
 	dynamoClient     dynamodbiface.DynamoDBAPI
