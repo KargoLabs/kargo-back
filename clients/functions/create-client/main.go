@@ -27,12 +27,12 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 
 	birthDate, err := time.Parse("2006-01-02", body.Get("birth_date"))
 	if err != nil {
-		return logAndReturnError(err)
+		return apigateway.NewJSONResponse(400, err)
 	}
 
 	client, err := models.NewClient(body.Get("name"), body.Get("document"), birthDate)
 	if err != nil {
-		return logAndReturnError(err)
+		return apigateway.NewJSONResponse(400, err)
 	}
 
 	err = storage.PutClient(ctx, client)

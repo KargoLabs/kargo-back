@@ -13,6 +13,10 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
+var (
+	errMissingClientID = errors.New("missing client id in query parameter")
+)
+
 func logAndReturnError(err error) *events.APIGatewayProxyResponse {
 	fmt.Println(err.Error())
 
@@ -25,7 +29,12 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return logAndReturnError(err)
 	}
 
-	client, err := storage.LoadClient(ctx, body.Get("client_id"))
+	clientID := body.Get("client_id")
+	if clientID == "" {
+		return apigateway.NewJSONResponse(400, errMissingClientID)
+	}
+
+	client, err := storage.LoadClient(ctx, clientID)
 	if errors.Is(err, storage.ErrClientNotFound) {
 		return apigateway.NewJSONResponse(404, err)
 	}
@@ -45,7 +54,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	if body.Get("birth_date") != "" {
 		birthDate, err := time.Parse("2006-01-02", body.Get("birth_date"))
 		if err != nil {
-			return logAndReturnError(err)
+			return apigateway.NewJSONResponse(400, err)
 		}
 
 		client.BirthDate = birthDate
