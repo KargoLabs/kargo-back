@@ -23,24 +23,24 @@ func logAndReturnError(err error) *events.APIGatewayProxyResponse {
 	return apigateway.NewJSONResponse(500, err)
 }
 
-func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) *events.APIGatewayProxyResponse {
+func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	body, err := url.ParseQuery(request.Body)
 	if err != nil {
-		return logAndReturnError(err)
+		return logAndReturnError(err), nil
 	}
 
 	clientID := body.Get("client_id")
 	if clientID == "" {
-		return apigateway.NewJSONResponse(400, errMissingClientID)
+		return apigateway.NewJSONResponse(400, errMissingClientID), nil
 	}
 
 	client, err := storage.LoadClient(ctx, clientID)
 	if errors.Is(err, storage.ErrClientNotFound) {
-		return apigateway.NewJSONResponse(404, err)
+		return apigateway.NewJSONResponse(404, err), nil
 	}
 
 	if err != nil {
-		return logAndReturnError(err)
+		return logAndReturnError(err), nil
 	}
 
 	if body.Get("name") != "" {
@@ -54,7 +54,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	if body.Get("birth_date") != "" {
 		birthDate, err := time.Parse("2006-01-02", body.Get("birth_date"))
 		if err != nil {
-			return apigateway.NewJSONResponse(400, err)
+			return apigateway.NewJSONResponse(400, err), nil
 		}
 
 		client.BirthDate = birthDate
@@ -62,10 +62,10 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 
 	err = storage.PutClient(ctx, client)
 	if err != nil {
-		return logAndReturnError(err)
+		return logAndReturnError(err), nil
 	}
 
-	return apigateway.NewJSONResponse(200, client)
+	return apigateway.NewJSONResponse(200, client), nil
 }
 
 func main() {

@@ -19,28 +19,28 @@ func logAndReturnError(err error) *events.APIGatewayProxyResponse {
 	return apigateway.NewJSONResponse(500, err)
 }
 
-func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) *events.APIGatewayProxyResponse {
+func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	body, err := url.ParseQuery(request.Body)
 	if err != nil {
-		return logAndReturnError(err)
+		return logAndReturnError(err), nil
 	}
 
 	birthDate, err := time.Parse("2006-01-02", body.Get("birth_date"))
 	if err != nil {
-		return apigateway.NewJSONResponse(400, err)
+		return apigateway.NewJSONResponse(400, err), nil
 	}
 
 	client, err := models.NewClient(body.Get("name"), body.Get("document"), birthDate)
 	if err != nil {
-		return apigateway.NewJSONResponse(400, err)
+		return apigateway.NewJSONResponse(400, err), nil
 	}
 
 	err = storage.PutClient(ctx, client)
 	if err != nil {
-		return logAndReturnError(err)
+		return logAndReturnError(err), nil
 	}
 
-	return apigateway.NewJSONResponse(201, client)
+	return apigateway.NewJSONResponse(201, client), nil
 }
 
 func main() {
