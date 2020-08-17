@@ -18,18 +18,18 @@ var (
 func logAndReturnError(err error) *events.APIGatewayProxyResponse {
 	fmt.Println(err.Error())
 
-	return apigateway.NewJSONResponse(500, err)
+	return apigateway.NewErrorResponse(500, err)
 }
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	clientID, ok := request.PathParameters["client_id"]
+	clientID, ok := request.QueryStringParameters["client_id"]
 	if !ok || clientID == "" {
-		return apigateway.NewJSONResponse(400, errMissingClientID), nil
+		return apigateway.NewErrorResponse(400, errMissingClientID), nil
 	}
 
 	client, err := storage.LoadClient(ctx, clientID)
 	if errors.Is(err, storage.ErrClientNotFound) {
-		return apigateway.NewJSONResponse(404, err), nil
+		return apigateway.NewErrorResponse(404, err), nil
 	}
 
 	if err != nil {

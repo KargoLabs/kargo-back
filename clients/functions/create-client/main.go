@@ -16,7 +16,7 @@ import (
 func logAndReturnError(err error) *events.APIGatewayProxyResponse {
 	fmt.Println(err.Error())
 
-	return apigateway.NewJSONResponse(500, err)
+	return apigateway.NewErrorResponse(500, err)
 }
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
@@ -27,12 +27,12 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 
 	birthDate, err := time.Parse("2006-01-02", body.Get("birth_date"))
 	if err != nil {
-		return apigateway.NewJSONResponse(400, err), nil
+		return apigateway.NewErrorResponse(400, err), nil
 	}
 
 	client, err := models.NewClient(body.Get("name"), body.Get("document"), birthDate)
 	if err != nil {
-		return apigateway.NewJSONResponse(400, err), nil
+		return apigateway.NewErrorResponse(400, err), nil
 	}
 
 	err = storage.PutClient(ctx, client)

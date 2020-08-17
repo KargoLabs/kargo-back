@@ -1,10 +1,19 @@
 package apigateway
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
+
+func TestNewErrorResponseKnownError(t *testing.T) {
+	c := require.New(t)
+
+	response := NewErrorResponse(404, errors.New("Resource not found"))
+	c.Equal(404, response.StatusCode)
+	c.JSONEq(`{"http_code":404,"message":"Resource not found"}`, response.Body)
+}
 
 func TestNewJSONResponse(t *testing.T) {
 	c := require.New(t)

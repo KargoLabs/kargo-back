@@ -14,13 +14,13 @@ import (
 )
 
 var (
-	errMissingClientID = errors.New("missing client id in query parameter")
+	errMissingClientID = errors.New("missing client id in body parameter")
 )
 
 func logAndReturnError(err error) *events.APIGatewayProxyResponse {
 	fmt.Println(err.Error())
 
-	return apigateway.NewJSONResponse(500, err)
+	return apigateway.NewErrorResponse(500, err)
 }
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
@@ -31,12 +31,12 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 
 	clientID := body.Get("client_id")
 	if clientID == "" {
-		return apigateway.NewJSONResponse(400, errMissingClientID), nil
+		return apigateway.NewErrorResponse(400, errMissingClientID), nil
 	}
 
 	client, err := storage.LoadClient(ctx, clientID)
 	if errors.Is(err, storage.ErrClientNotFound) {
-		return apigateway.NewJSONResponse(404, err), nil
+		return apigateway.NewErrorResponse(404, err), nil
 	}
 
 	if err != nil {
@@ -54,7 +54,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	if body.Get("birth_date") != "" {
 		birthDate, err := time.Parse("2006-01-02", body.Get("birth_date"))
 		if err != nil {
-			return apigateway.NewJSONResponse(400, err), nil
+			return apigateway.NewErrorResponse(400, err), nil
 		}
 
 		client.BirthDate = birthDate
