@@ -1,4 +1,4 @@
-package clientModels
+package models
 
 import (
 	"testing"
