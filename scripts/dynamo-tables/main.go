@@ -71,7 +71,7 @@ func createTable(tableConfiguration TableConfiguration) {
 			ReadCapacityUnits:  aws.Int64(5),
 			WriteCapacityUnits: aws.Int64(5),
 		},
-		TableName: aws.String(tableConfiguration.TableIndex),
+		TableName: aws.String(tableConfiguration.TableName),
 	}
 
 	result, err := dynamoClient.CreateTable(input)
