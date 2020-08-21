@@ -64,8 +64,8 @@ func LoadClient(ctx context.Context, clientID string) (*models.Client, error) {
 		return nil, ErrClientNotFound
 	}
 
-	var voiceEnrollment models.Client
-	err = dynamodbattribute.UnmarshalMap(response.Item, &voiceEnrollment)
+	var client models.Client
+	err = dynamodbattribute.UnmarshalMap(response.Item, &client)
 
-	return &voiceEnrollment, err
+	return &client, err
 }
