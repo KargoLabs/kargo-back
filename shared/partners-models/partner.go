@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	partnerIDPrefix   = "PAR"
-	partnertIDBitSize = 16
+	partnerIDPrefix  = "PAR"
+	partnerIDBitSize = 16
 )
 
 var (
@@ -45,7 +45,7 @@ func NewPartner(name, document string, birthDate time.Time) (*Partner, error) {
 	}
 
 	return &Partner{
-		PartnerID:    random.GenerateID(partnerIDPrefix, partnertIDBitSize),
+		PartnerID:    random.GenerateID(partnerIDPrefix, partnerIDBitSize),
 		Name:         normalize.NormalizeName(name),
 		Document:     document,
 		CreationDate: time.Now(),

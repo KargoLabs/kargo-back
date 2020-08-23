@@ -15,7 +15,7 @@ import (
 
 var (
 	// ErrPartnerNotFound when no Partner was found
-	ErrPartnerNotFound = errors.New("partnert not found")
+	ErrPartnerNotFound = errors.New("partner not found")
 
 	partnersTableName = environment.GetString("PARTNERS_TABLE_NAME", "partners")
 	dynamoClient      dynamodbiface.DynamoDBAPI
@@ -26,7 +26,7 @@ func init() {
 	dynamoClient = dynamodb.New(sess)
 }
 
-// PutPartner saves a Partnert in DynamoDB
+// PutPartner saves a Partner in DynamoDB
 func PutPartner(ctx context.Context, partner *models.Partner) error {
 	item, err := dynamodbattribute.MarshalMap(partner)
 	if err != nil {
