@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
-	"kargo-back/clients/storage"
+	"kargo-back/partners/storage"
 	"kargo-back/shared/apigateway"
 	"kargo-back/shared/normalize"
 	"net/url"
@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	errMissingClientID = errors.New("missing client id in body parameter")
+	errMissingPartnerID = errors.New("missing partner id in body parameter")
 )
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
@@ -29,13 +29,13 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	clientID := body.Get("client_id")
-	if clientID == "" {
-		return apigateway.NewErrorResponse(400, errMissingClientID), nil
+	partnerID := body.Get("partner_id")
+	if partnerID == "" {
+		return apigateway.NewErrorResponse(400, errMissingPartnerID), nil
 	}
 
-	client, err := storage.LoadClient(ctx, clientID)
-	if errors.Is(err, storage.ErrClientNotFound) {
+	partner, err := storage.LoadPartner(ctx, partnerID)
+	if errors.Is(err, storage.ErrPartnerNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
 	}
 
@@ -44,11 +44,11 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	}
 
 	if body.Get("name") != "" {
-		client.Name = normalize.NormalizeName(body.Get("name"))
+		partner.Name = normalize.NormalizeName(body.Get("name"))
 	}
 
 	if body.Get("document") != "" {
-		client.Document = body.Get("document")
+		partner.Document = body.Get("document")
 	}
 
 	if body.Get("birth_date") != "" {
@@ -57,15 +57,15 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 			return apigateway.NewErrorResponse(400, err), nil
 		}
 
-		client.BirthDate = birthDate
+		partner.BirthDate = birthDate
 	}
 
-	err = storage.PutClient(ctx, client)
+	err = storage.PutPartner(ctx, partner)
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	return apigateway.NewJSONResponse(200, client), nil
+	return apigateway.NewJSONResponse(200, partner), nil
 }
 
 func main() {

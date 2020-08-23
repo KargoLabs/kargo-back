@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"encoding/base64"
-	"kargo-back/clients/storage"
+	"kargo-back/partners/storage"
 	"kargo-back/shared/apigateway"
-	models "kargo-back/shared/clients-models"
+	models "kargo-back/shared/partners-models"
 	"net/url"
 	"time"
 
@@ -29,17 +29,18 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.NewErrorResponse(400, err), nil
 	}
 
-	client, err := models.NewClient(body.Get("name"), body.Get("document"), birthDate)
+	partner, err := models.NewPartner(body.Get("name"), body.Get("document"), birthDate)
 	if err != nil {
 		return apigateway.NewErrorResponse(400, err), nil
 	}
 
-	err = storage.PutClient(ctx, client)
+	err = storage.PutPartner(ctx, partner)
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	return apigateway.NewJSONResponse(201, client), nil
+	return apigateway.NewJSONResponse(201, partner), nil
+
 }
 
 func main() {
