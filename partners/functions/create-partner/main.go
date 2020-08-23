@@ -31,7 +31,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 
 	partner, err := models.NewPartner(body.Get("name"), body.Get("document"), birthDate)
 	if err != nil {
-		return apigateway.LogAndReturnError(err), nil
+		return apigateway.NewErrorResponse(400, err), nil
 	}
 
 	err = storage.PutPartner(ctx, partner)
