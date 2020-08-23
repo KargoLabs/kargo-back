@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
-	"fmt"
 	"kargo-back/clients/storage"
 	"kargo-back/shared/apigateway"
 	"kargo-back/shared/normalize"
@@ -19,21 +18,15 @@ var (
 	errMissingClientID = errors.New("missing client id in body parameter")
 )
 
-func logAndReturnError(err error) *events.APIGatewayProxyResponse {
-	fmt.Println(err.Error())
-
-	return apigateway.NewErrorResponse(500, err)
-}
-
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	bodyBytes, err := base64.StdEncoding.DecodeString(request.Body)
 	if err != nil {
-		return logAndReturnError(err), nil
+		return apigateway.LogAndReturnError(err), nil
 	}
 
 	body, err := url.ParseQuery(string(bodyBytes))
 	if err != nil {
-		return logAndReturnError(err), nil
+		return apigateway.LogAndReturnError(err), nil
 	}
 
 	clientID := body.Get("client_id")
@@ -47,7 +40,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	}
 
 	if err != nil {
-		return logAndReturnError(err), nil
+		return apigateway.LogAndReturnError(err), nil
 	}
 
 	if body.Get("name") != "" {
@@ -69,7 +62,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 
 	err = storage.PutClient(ctx, client)
 	if err != nil {
-		return logAndReturnError(err), nil
+		return apigateway.LogAndReturnError(err), nil
 	}
 
 	return apigateway.NewJSONResponse(200, client), nil

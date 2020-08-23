@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"kargo-back/clients/storage"
 	"kargo-back/shared/apigateway"
 
@@ -14,12 +13,6 @@ import (
 var (
 	errMissingClientID = errors.New("missing client id in query parameter")
 )
-
-func logAndReturnError(err error) *events.APIGatewayProxyResponse {
-	fmt.Println(err.Error())
-
-	return apigateway.NewErrorResponse(500, err)
-}
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	clientID, ok := request.QueryStringParameters["client_id"]
@@ -33,7 +26,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	}
 
 	if err != nil {
-		return logAndReturnError(err), nil
+		return apigateway.LogAndReturnError(err), nil
 	}
 
 	return apigateway.NewJSONResponse(200, client), nil

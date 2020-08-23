@@ -2,6 +2,7 @@ package apigateway
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/aws/aws-lambda-go/events"
 )
@@ -31,4 +32,12 @@ func NewJSONResponse(statusCode int, val interface{}) *events.APIGatewayProxyRes
 			"Access-Control-Allow-Origin": "*",
 		},
 	}
+}
+
+// LogAndReturnError logs the given error to the console and terminates
+// the response with a status 500 showing the error
+func LogAndReturnError(err error) *events.APIGatewayProxyResponse {
+	fmt.Println(err.Error())
+
+	return NewErrorResponse(500, err)
 }

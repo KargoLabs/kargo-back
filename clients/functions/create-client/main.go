@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/base64"
-	"fmt"
 	"kargo-back/clients/storage"
 	"kargo-back/shared/apigateway"
 	models "kargo-back/shared/clients-models"
@@ -14,21 +13,15 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func logAndReturnError(err error) *events.APIGatewayProxyResponse {
-	fmt.Println(err.Error())
-
-	return apigateway.NewErrorResponse(500, err)
-}
-
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	bodyBytes, err := base64.StdEncoding.DecodeString(request.Body)
 	if err != nil {
-		return logAndReturnError(err), nil
+		return apigateway.LogAndReturnError(err), nil
 	}
 
 	body, err := url.ParseQuery(string(bodyBytes))
 	if err != nil {
-		return logAndReturnError(err), nil
+		return apigateway.LogAndReturnError(err), nil
 	}
 
 	birthDate, err := time.Parse("2006-01-02", body.Get("birth_date"))
@@ -43,7 +36,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 
 	err = storage.PutClient(ctx, client)
 	if err != nil {
-		return logAndReturnError(err), nil
+		return apigateway.LogAndReturnError(err), nil
 	}
 
 	return apigateway.NewJSONResponse(201, client), nil
