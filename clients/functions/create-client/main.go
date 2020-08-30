@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"encoding/base64"
-	"kargo-back/clients/storage"
 	"kargo-back/shared/apigateway"
 	models "kargo-back/shared/clients-models"
+	storage "kargo-back/storage/clients"
 	"net/url"
 	"time"
 

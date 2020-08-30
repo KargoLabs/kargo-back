@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"errors"
-	"kargo-back/clients/storage"
 	"kargo-back/shared/apigateway"
+	storage "kargo-back/storage/clients"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"

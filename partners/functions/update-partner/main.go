@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
-	"kargo-back/partners/storage"
 	"kargo-back/shared/apigateway"
 	"kargo-back/shared/normalize"
+	storage "kargo-back/storage/partners"
 	"net/url"
 	"time"
 
