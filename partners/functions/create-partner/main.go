@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/base64"
 	"kargo-back/shared/apigateway"
 	models "kargo-back/shared/partners-models"
 	storage "kargo-back/storage/partners"
@@ -14,12 +13,7 @@ import (
 )
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	bodyBytes, err := base64.StdEncoding.DecodeString(request.Body)
-	if err != nil {
-		return apigateway.LogAndReturnError(err), nil
-	}
-
-	body, err := url.ParseQuery(string(bodyBytes))
+	body, err := url.ParseQuery(request.Body)
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
 	}
