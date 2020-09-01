@@ -2,11 +2,10 @@ package main
 
 import (
 	"context"
-	"encoding/base64"
 	"errors"
-	"kargo-back/partners/storage"
 	"kargo-back/shared/apigateway"
 	"kargo-back/shared/normalize"
+	storage "kargo-back/storage/partners"
 	"net/url"
 	"time"
 
@@ -19,12 +18,7 @@ var (
 )
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	bodyBytes, err := base64.StdEncoding.DecodeString(request.Body)
-	if err != nil {
-		return apigateway.LogAndReturnError(err), nil
-	}
-
-	body, err := url.ParseQuery(string(bodyBytes))
+	body, err := url.ParseQuery(string(request.Body))
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
 	}
