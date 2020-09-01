@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"kargo-back/shared/apigateway"
+	models "kargo-back/shared/clients-models"
 	"kargo-back/shared/normalize"
+	"kargo-back/shared/random"
 	storage "kargo-back/storage/clients"
 	"net/url"
 	"time"
@@ -13,22 +15,18 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-var (
-	errMissingClientID = errors.New("missing client id in body parameter")
-)
-
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+	username, err := apigateway.GetUsername(request)
+	if err != nil {
+		return apigateway.LogAndReturnError(err), nil
+	}
+
 	body, err := url.ParseQuery(request.Body)
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	clientID := body.Get("client_id")
-	if clientID == "" {
-		return apigateway.NewErrorResponse(400, errMissingClientID), nil
-	}
-
-	client, err := storage.LoadClient(ctx, clientID)
+	client, err := storage.LoadClient(ctx, random.GetSHA256WithPrefix(models.ClientIDPrefix, username))
 	if errors.Is(err, storage.ErrClientNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
 	}
@@ -45,8 +43,8 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		client.Document = body.Get("document")
 	}
 
-	if body.Get("birth_date") != "" {
-		birthDate, err := time.Parse("2006-01-02", body.Get("birth_date"))
+	if body.Get("birthdate") != "" {
+		birthDate, err := time.Parse("2006-01-02", body.Get("birthdate"))
 		if err != nil {
 			return apigateway.NewErrorResponse(400, err), nil
 		}

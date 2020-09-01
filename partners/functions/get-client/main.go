@@ -4,21 +4,23 @@ import (
 	"context"
 	"errors"
 	"kargo-back/shared/apigateway"
-	models "kargo-back/shared/clients-models"
-	"kargo-back/shared/random"
 	storage "kargo-back/storage/clients"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
+var (
+	errMissingClientID = errors.New("missing client id in query parameter")
+)
+
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	username, err := apigateway.GetUsername(request)
-	if err != nil {
-		return apigateway.LogAndReturnError(err), nil
+	clientID, ok := request.QueryStringParameters["client_id"]
+	if !ok || clientID == "" {
+		return apigateway.NewErrorResponse(400, errMissingClientID), nil
 	}
 
-	client, err := storage.LoadClient(ctx, random.GetSHA256WithPrefix(models.ClientIDPrefix, username))
+	client, err := storage.LoadClient(ctx, clientID)
 	if errors.Is(err, storage.ErrClientNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
 	}

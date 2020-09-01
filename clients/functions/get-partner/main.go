@@ -4,22 +4,25 @@ import (
 	"context"
 	"errors"
 	"kargo-back/shared/apigateway"
-	models "kargo-back/shared/clients-models"
-	"kargo-back/shared/random"
-	storage "kargo-back/storage/clients"
+	storage "kargo-back/storage/partners"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
+var (
+	errMissingPartnerID = errors.New("missing partner id in query parameter")
+)
+
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	username, err := apigateway.GetUsername(request)
-	if err != nil {
-		return apigateway.LogAndReturnError(err), nil
+	partnerID, ok := request.QueryStringParameters["partner_id"]
+
+	if !ok || partnerID == "" {
+		return apigateway.NewErrorResponse(400, errMissingPartnerID), nil
 	}
 
-	client, err := storage.LoadClient(ctx, random.GetSHA256WithPrefix(models.ClientIDPrefix, username))
-	if errors.Is(err, storage.ErrClientNotFound) {
+	partner, err := storage.LoadPartner(ctx, partnerID)
+	if errors.Is(err, storage.ErrPartnerNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
 	}
 
@@ -27,7 +30,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	return apigateway.NewJSONResponse(200, client), nil
+	return apigateway.NewJSONResponse(200, partner), nil
 }
 
 func main() {

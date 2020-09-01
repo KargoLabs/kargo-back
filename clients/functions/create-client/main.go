@@ -13,17 +13,22 @@ import (
 )
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+	username, err := apigateway.GetUsername(request)
+	if err != nil {
+		return apigateway.LogAndReturnError(err), nil
+	}
+
 	body, err := url.ParseQuery(request.Body)
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	birthDate, err := time.Parse("2006-01-02", body.Get("birth_date"))
+	birthDate, err := time.Parse("2006-01-02", body.Get("birthdate"))
 	if err != nil {
 		return apigateway.NewErrorResponse(400, err), nil
 	}
 
-	client, err := models.NewClient(body.Get("name"), body.Get("document"), birthDate)
+	client, err := models.NewClient(username, body.Get("name"), body.Get("document"), birthDate)
 	if err != nil {
 		return apigateway.NewErrorResponse(400, err), nil
 	}

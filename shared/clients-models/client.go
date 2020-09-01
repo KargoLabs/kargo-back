@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	clientIDPrefix  = "CLI"
-	clientIDBitSize = 16
+	// ClientIDPrefix is the prefix for identifying client IDs
+	ClientIDPrefix = "CLI"
 )
 
 var (
@@ -19,6 +19,8 @@ var (
 	ErrMissingDocument = errors.New("missing document parameter")
 	// ErrMissingBirthDate error when birth date is missing
 	ErrMissingBirthDate = errors.New("missing birth date parameter")
+	// ErrMissingUsername error when username is missing
+	ErrMissingUsername = errors.New("missing username parameter")
 )
 
 // Client is the struct handler for client
@@ -26,12 +28,16 @@ type Client struct {
 	ClientID     string    `json:"client_id"`
 	Name         string    `json:"name"`
 	Document     string    `json:"document"`
-	BirthDate    time.Time `json:"birth_date"`
+	BirthDate    time.Time `json:"birthdate"`
 	CreationDate time.Time `json:"creation_date"`
 }
 
 // NewClient returns Client structure with given values
-func NewClient(name, document string, birthDate time.Time) (*Client, error) {
+func NewClient(username, name, document string, birthDate time.Time) (*Client, error) {
+	if username == "" {
+		return nil, ErrMissingName
+	}
+
 	if name == "" {
 		return nil, ErrMissingName
 	}
@@ -45,7 +51,7 @@ func NewClient(name, document string, birthDate time.Time) (*Client, error) {
 	}
 
 	return &Client{
-		ClientID:     random.GenerateID(clientIDPrefix, clientIDBitSize),
+		ClientID:     random.GetSHA256WithPrefix(ClientIDPrefix, username),
 		Name:         normalize.NormalizeName(name),
 		Document:     document,
 		BirthDate:    birthDate,

@@ -23,3 +23,11 @@ func TestGenerateID(t *testing.T) {
 
 	c.Equal(34, len(GenerateID("PR", 16)))
 }
+
+func TestGetSHA256WithPrefix(t *testing.T) {
+	c := require.New(t)
+	apiKey := "dummy"
+
+	enc := GetSHA256WithPrefix("DUM", apiKey)
+	c.Equal("DUMb5a2c96250612366ea272ffac6d9744aaf4b45aacd96aa7cfcb931ee3b558259", enc)
+}
