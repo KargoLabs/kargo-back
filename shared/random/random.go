@@ -2,11 +2,17 @@ package random
 
 import (
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
+	"kargo-back/shared/environment"
 )
 
 const (
 	attemptsToReadRandomData = 3
+)
+
+var (
+	passphrase = environment.GetString("PASSPHRASE", "")
 )
 
 // GenerateRandomData returns secure random data with the given size
@@ -31,4 +37,12 @@ func GenerateRandomHexString(bitSize int) string {
 // GenerateID generates a ID with the given prefix
 func GenerateID(prefix string, bitSize int) string {
 	return prefix + GenerateRandomHexString(bitSize)
+}
+
+// GetSHA256WithPrefix returns hexadecimal representation of a string with SHA with prefix
+func GetSHA256WithPrefix(prefix, val string) string {
+	algorithm := sha256.New()
+	algorithm.Write([]byte(val))
+
+	return prefix + hex.EncodeToString(algorithm.Sum([]byte(passphrase)))
 }
