@@ -13,15 +13,15 @@ func TestNewPartnerFail(t *testing.T) {
 	birthDate, err := time.Parse("2010-04-04", "2000-05-02")
 	c.Nil(err)
 
-	client, err := NewPartner("", "2222", birthDate)
+	client, err := NewPartner("dummyUser", "", "2222", birthDate)
 	c.Nil(client)
 	c.Equal(ErrMissingBirthDate, err)
 
-	client, err = NewPartner("roniel valdez", "", birthDate)
+	client, err = NewPartner("dummyUser", "roniel valdez", "", birthDate)
 	c.Nil(client)
 	c.Equal(ErrMissingDocument, err)
 
-	client, err = NewPartner("roniel valdez", "12345", time.Time{})
+	client, err = NewPartner("dummyUser", "roniel valdez", "12345", time.Time{})
 	c.Nil(client)
 	c.Equal(ErrMissingBirthDate, err)
 }
@@ -32,7 +32,7 @@ func TestNewPartner(t *testing.T) {
 	birthDate, err := time.Parse("2010-01-02", "2000-05-02")
 	c.Nil(err)
 
-	partner, err := NewPartner("roniel, valdez", "12345", birthDate)
+	partner, err := NewPartner("dummyUser", "roniel, valdez", "12345", birthDate)
 	c.Nil(err)
 
 	c.NotEmpty(partner.PartnerID)

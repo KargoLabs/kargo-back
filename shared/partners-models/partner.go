@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	partnerIDPrefix  = "PAR"
-	partnerIDBitSize = 16
+	// PartnerIDPrefix is the prefix for identifying partners
+	PartnerIDPrefix = "PAR"
 )
 
 var (
@@ -28,10 +28,11 @@ type Partner struct {
 	Document     string    `json:"document"`
 	BirthDate    time.Time `json:"birth_date"`
 	CreationDate time.Time `json:"creation_date"`
+	UpdateDate   time.Time `json:"update_date"`
 }
 
 // NewPartner returns Partner structure with given values
-func NewPartner(name, document string, birthDate time.Time) (*Partner, error) {
+func NewPartner(username, name, document string, birthDate time.Time) (*Partner, error) {
 	if name == "" {
 		return nil, ErrMissingName
 	}
@@ -45,9 +46,10 @@ func NewPartner(name, document string, birthDate time.Time) (*Partner, error) {
 	}
 
 	return &Partner{
-		PartnerID:    random.GenerateID(partnerIDPrefix, partnerIDBitSize),
+		PartnerID:    random.GetSHA256WithPrefix(PartnerIDPrefix, username),
 		Name:         normalize.NormalizeName(name),
 		Document:     document,
 		CreationDate: time.Now(),
+		UpdateDate:   time.Now(),
 	}, nil
 }
