@@ -30,6 +30,7 @@ type Client struct {
 	Document     string    `json:"document"`
 	BirthDate    time.Time `json:"birthdate"`
 	CreationDate time.Time `json:"creation_date"`
+	UpdateDate   time.Time `json:"update_date"`
 }
 
 // NewClient returns Client structure with given values
@@ -56,5 +57,6 @@ func NewClient(username, name, document string, birthDate time.Time) (*Client, e
 		Document:     document,
 		BirthDate:    birthDate,
 		CreationDate: time.Now(),
+		UpdateDate:   time.Now(),
 	}, nil
 }
