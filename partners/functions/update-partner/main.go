@@ -5,7 +5,10 @@ import (
 	"errors"
 	"kargo-back/shared/apigateway"
 	"kargo-back/shared/normalize"
+	models "kargo-back/shared/partners-models"
+	"kargo-back/shared/random"
 	storage "kargo-back/storage/partners"
+
 	"net/url"
 	"time"
 
@@ -18,17 +21,18 @@ var (
 )
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+	username, err := apigateway.GetUsername(request)
+
+	if err != nil {
+		return apigateway.LogAndReturnError(err), nil
+	}
+
 	body, err := url.ParseQuery(string(request.Body))
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	partnerID := body.Get("partner_id")
-	if partnerID == "" {
-		return apigateway.NewErrorResponse(400, errMissingPartnerID), nil
-	}
-
-	partner, err := storage.LoadPartner(ctx, partnerID)
+	partner, err := storage.LoadPartner(ctx, random.GetSHA256WithPrefix(models.PartnerIDPrefix, username))
 	if errors.Is(err, storage.ErrPartnerNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
 	}
