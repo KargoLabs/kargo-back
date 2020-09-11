@@ -26,13 +26,13 @@ type Partner struct {
 	PartnerID    string    `json:"partner_id"`
 	Name         string    `json:"name"`
 	Document     string    `json:"document"`
-	Birthdate    time.Time `json:"birth_date"`
+	Birthdate    time.Time `json:"birthdate"`
 	CreationDate time.Time `json:"creation_date"`
 	UpdateDate   time.Time `json:"update_date"`
 }
 
 // NewPartner returns Partner structure with given values
-func NewPartner(username, name, document string, birthDate time.Time) (*Partner, error) {
+func NewPartner(username, name, document string, birthdate time.Time) (*Partner, error) {
 	if name == "" {
 		return nil, ErrMissingName
 	}
@@ -41,7 +41,7 @@ func NewPartner(username, name, document string, birthDate time.Time) (*Partner,
 		return nil, ErrMissingDocument
 	}
 
-	if (birthDate == time.Time{}) {
+	if (birthdate == time.Time{}) {
 		return nil, ErrMissingBirthdate
 	}
 

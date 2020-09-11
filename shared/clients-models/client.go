@@ -17,8 +17,8 @@ var (
 	ErrMissingName = errors.New("missing name parameter")
 	// ErrMissingDocument error when document is missing
 	ErrMissingDocument = errors.New("missing document parameter")
-	// ErrMissingBirthDate error when birth date is missing
-	ErrMissingBirthDate = errors.New("missing birth date parameter")
+	// ErrMissingBirthdate error when birth date is missing
+	ErrMissingBirthdate = errors.New("missing birth date parameter")
 	// ErrMissingUsername error when username is missing
 	ErrMissingUsername = errors.New("missing username parameter")
 )
@@ -28,13 +28,13 @@ type Client struct {
 	ClientID     string    `json:"client_id"`
 	Name         string    `json:"name"`
 	Document     string    `json:"document"`
-	BirthDate    time.Time `json:"birthdate"`
+	Birthdate    time.Time `json:"birthdate"`
 	CreationDate time.Time `json:"creation_date"`
 	UpdateDate   time.Time `json:"update_date"`
 }
 
 // NewClient returns Client structure with given values
-func NewClient(username, name, document string, birthDate time.Time) (*Client, error) {
+func NewClient(username, name, document string, birthdate time.Time) (*Client, error) {
 	if username == "" {
 		return nil, ErrMissingName
 	}
@@ -47,15 +47,15 @@ func NewClient(username, name, document string, birthDate time.Time) (*Client, e
 		return nil, ErrMissingDocument
 	}
 
-	if (birthDate == time.Time{}) {
-		return nil, ErrMissingBirthDate
+	if (birthdate == time.Time{}) {
+		return nil, ErrMissingBirthdate
 	}
 
 	return &Client{
 		ClientID:     random.GetSHA256WithPrefix(ClientIDPrefix, username),
 		Name:         normalize.NormalizeName(name),
 		Document:     document,
-		BirthDate:    birthDate,
+		Birthdate:    birthdate,
 		CreationDate: time.Now(),
 		UpdateDate:   time.Now(),
 	}, nil

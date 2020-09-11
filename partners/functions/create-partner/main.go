@@ -24,12 +24,12 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	birthDate, err := time.Parse("2006-01-02", body.Get("birth_date"))
+	birthdate, err := time.Parse("2006-01-02", body.Get("birthdate"))
 	if err != nil {
 		return apigateway.NewErrorResponse(400, err), nil
 	}
 
-	partner, err := models.NewPartner(username, body.Get("name"), body.Get("document"), birthDate)
+	partner, err := models.NewPartner(username, body.Get("name"), body.Get("document"), birthdate)
 	if err != nil {
 		return apigateway.NewErrorResponse(400, err), nil
 	}
