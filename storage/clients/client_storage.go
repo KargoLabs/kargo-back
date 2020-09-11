@@ -5,7 +5,6 @@ import (
 	"errors"
 	models "kargo-back/shared/clients-models"
 	"kargo-back/shared/environment"
-	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -29,8 +28,6 @@ func init() {
 
 // PutClient saves a Client in DynamoDB
 func PutClient(ctx context.Context, client *models.Client) error {
-	client.UpdateDate = time.Now()
-
 	item, err := dynamodbattribute.MarshalMap(client)
 	if err != nil {
 		return err

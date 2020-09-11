@@ -5,7 +5,6 @@ import (
 	"errors"
 	"kargo-back/shared/environment"
 	models "kargo-back/shared/partners-models"
-	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -29,8 +28,6 @@ func init() {
 
 // PutPartner saves a Partner in DynamoDB
 func PutPartner(ctx context.Context, partner *models.Partner) error {
-	partner.UpdateDate = time.Now()
-
 	item, err := dynamodbattribute.MarshalMap(partner)
 	if err != nil {
 		return err

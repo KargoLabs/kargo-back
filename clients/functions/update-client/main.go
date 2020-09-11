@@ -52,6 +52,8 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		client.BirthDate = birthDate
 	}
 
+	client.UpdateDate = time.Now()
+
 	err = storage.PutClient(ctx, client)
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
