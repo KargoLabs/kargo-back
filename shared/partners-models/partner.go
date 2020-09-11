@@ -17,8 +17,8 @@ var (
 	ErrMissingName = errors.New("missing name parameter")
 	// ErrMissingDocument error when document is missing
 	ErrMissingDocument = errors.New("missing document parameter")
-	// ErrMissingBirthDate error when birth date is missing
-	ErrMissingBirthDate = errors.New("missing birth date parameter")
+	// ErrMissingBirthdate error when birth date is missing
+	ErrMissingBirthdate = errors.New("missing birth date parameter")
 )
 
 // Partner is the struct handler for partner
@@ -26,7 +26,7 @@ type Partner struct {
 	PartnerID    string    `json:"partner_id"`
 	Name         string    `json:"name"`
 	Document     string    `json:"document"`
-	BirthDate    time.Time `json:"birth_date"`
+	Birthdate    time.Time `json:"birth_date"`
 	CreationDate time.Time `json:"creation_date"`
 	UpdateDate   time.Time `json:"update_date"`
 }
@@ -42,7 +42,7 @@ func NewPartner(username, name, document string, birthDate time.Time) (*Partner,
 	}
 
 	if (birthDate == time.Time{}) {
-		return nil, ErrMissingBirthDate
+		return nil, ErrMissingBirthdate
 	}
 
 	return &Partner{
