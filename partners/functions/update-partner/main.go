@@ -49,13 +49,13 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		partner.Document = body.Get("document")
 	}
 
-	if body.Get("birth_date") != "" {
-		birthDate, err := time.Parse("2006-01-02", body.Get("birth_date"))
+	if body.Get("birthdate") != "" {
+		birthdate, err := time.Parse("2006-01-02", body.Get("birthdate"))
 		if err != nil {
 			return apigateway.NewErrorResponse(400, err), nil
 		}
 
-		partner.BirthDate = birthDate
+		partner.Birthdate = birthdate
 	}
 
 	partner.UpdateDate = time.Now()
