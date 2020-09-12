@@ -21,16 +21,19 @@ var (
 )
 
 // TransactionStatus is the type handler for payment TransactionStatus.
-type TransactionStatus int
+type TransactionStatus string
 
 const (
-	// Started is when a trip has started
-	Started TransactionStatus = iota
-	// InProgress is when a trip is in progress
-	InProgress
-	// Completed is when a trip has been completed
-	Completed
+	// TransactionStatusStarted is when a trip has started
+	TransactionStatusStarted TransactionStatus = "started"
+	// TransactionStatusInProgress is when a trip is in progress
+	TransactionStatusInProgress TransactionStatus = "in progress"
+	// TransactionStatusCompleted is when a trip has been completed
+	TransactionStatusCompleted TransactionStatus = "completed"
 )
+
+// transactionstatus.completed
+// amount > partnerid
 
 // Transaction is the struct handler for transaction
 type Transaction struct {
@@ -62,9 +65,9 @@ func NewTransaction(clientID, partnerID string, amount int) (*Transaction,
 		ClientID:  clientID,
 		PartnerID: partnerID,
 		Amount:    amount,
-		Status:    Started,
+		Status:    TransactionStatusStarted,
 		Date:      time.Now(),
-		TransactionID: random.GetSHA256WithPrefix(TransactionIDPrefix,
-			time.Now().String()),
+		TransactionID: random.GenerateID(TransactionIDPrefix,
+			random.StandardBitSize),
 	}, nil
 }
