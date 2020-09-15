@@ -13,10 +13,6 @@ import (
 )
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	_, err := apigateway.GetUsername(request)
-	if err != nil {
-		return apigateway.LogAndReturnError(err), nil
-	}
 
 	body, err := url.ParseQuery(request.Body)
 	if err != nil {
