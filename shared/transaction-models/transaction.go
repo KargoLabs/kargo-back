@@ -32,9 +32,6 @@ const (
 	TransactionStatusCompleted TransactionStatus = "completed"
 )
 
-// transactionstatus.completed
-// amount > partnerid
-
 // Transaction is the struct handler for transaction
 type Transaction struct {
 	TransactionID string            `json:"transaction_id"`
