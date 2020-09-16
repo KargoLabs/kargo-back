@@ -20,7 +20,6 @@ func TestNewTransactionFail(t *testing.T) {
 	transaction, err = NewTransaction("client01", "partner01", -100)
 	c.Nil(transaction)
 	c.Equal(ErrInvalidAmount, err)
-
 }
 
 func TestNewTrancation(t *testing.T) {

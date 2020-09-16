@@ -17,7 +17,6 @@ import (
 )
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-
 	body, err := url.ParseQuery(request.Body)
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
