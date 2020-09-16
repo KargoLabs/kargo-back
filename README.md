@@ -7,4 +7,4 @@ Repository of back end code for the Kargo Project
  - Libraries used by many services: `/shared`
  - Various scripts: `/scripts/<script-usage>`
  - Service code itself: `/<service-name>/functions`
- - Storage library used by a service: `/<service-name>/storage`
+ - Storage libraries: `/storage`
