@@ -13,7 +13,6 @@ import (
 )
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-
 	body, err := url.ParseQuery(request.Body)
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
@@ -25,14 +24,21 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	status := body.Get("status")
-
+	status := models.TransactionStatus(body.Get("status"))
 	if status == "" {
 		return apigateway.LogAndReturnError(
 			errors.New("missing status parameter")), nil
+	} 
+
+	_, valid := models.ValidTransactionStatus(status)
+	if !valid {
+		return apigateway.LogAndReturnError(
+			errors.New("invalid status"), nil
+		)
 	}
 
 	transaction.Status = models.TransactionStatus(status)
+
 	err = storage.PutTransaction(ctx, transaction)
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil

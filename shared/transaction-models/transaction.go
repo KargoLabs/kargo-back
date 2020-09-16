@@ -32,6 +32,14 @@ const (
 	TransactionStatusCompleted TransactionStatus = "completed"
 )
 
+var (
+	ValidTransactionStatus = map[TransactionStatus]bool {
+		TransactionStatusStarted: true,
+		TransactionStatusInProgress: true,
+		TransactionStatusCompleted: true,
+	}
+)
+
 // Transaction is the struct handler for transaction
 type Transaction struct {
 	TransactionID string            `json:"transaction_id"`
@@ -43,9 +51,7 @@ type Transaction struct {
 }
 
 // NewTransaction returns a Transaction structure with given values
-func NewTransaction(clientID, partnerID string, amount int) (*Transaction,
-	error) {
-
+func NewTransaction(clientID, partnerID string, amount int) (*Transaction, error) {
 	if clientID == "" {
 		return nil, ErrMissingClientID
 	}
