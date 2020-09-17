@@ -18,23 +18,19 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	transaction, err := storage.LoadTransaction(ctx,
-		body.Get("transaction_id"))
+	transaction, err := storage.LoadTransaction(ctx, body.Get("transaction_id"))
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
 	}
 
 	status := models.TransactionStatus(body.Get("status"))
 	if status == "" {
-		return apigateway.LogAndReturnError(
-			errors.New("missing status parameter")), nil
-	} 
+		return apigateway.LogAndReturnError(errors.New("missing status parameter")), nil
+	}
 
-	_, valid := models.ValidTransactionStatus(status)
+	_, valid := models.ValidTransactionStatus[status]
 	if !valid {
-		return apigateway.LogAndReturnError(
-			errors.New("invalid status"), nil
-		)
+		return apigateway.LogAndReturnError(errors.New("invalid status")), nil
 	}
 
 	transaction.Status = models.TransactionStatus(status)

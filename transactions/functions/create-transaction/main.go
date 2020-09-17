@@ -45,8 +45,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	transaction, err := models.NewTransaction(client.ClientID,
-		partner.PartnerID, amount)
+	transaction, err := models.NewTransaction(client.ClientID, partner.PartnerID, amount)
 
 	err = storage.PutTransaction(ctx, transaction)
 	if err != nil {

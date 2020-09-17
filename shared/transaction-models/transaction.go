@@ -33,10 +33,11 @@ const (
 )
 
 var (
-	ValidTransactionStatus = map[TransactionStatus]bool {
-		TransactionStatusStarted: true,
+	// ValidTransactionStatus represents a map of all the valid transaction status
+	ValidTransactionStatus = map[TransactionStatus]bool{
+		TransactionStatusStarted:    true,
 		TransactionStatusInProgress: true,
-		TransactionStatusCompleted: true,
+		TransactionStatusCompleted:  true,
 	}
 )
 
