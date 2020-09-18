@@ -13,6 +13,9 @@ const (
 
 var (
 	passphrase = environment.GetString("PASSPHRASE", "")
+
+	// StandardBitSize is the standard bit size for models
+	StandardBitSize = int(environment.GetInt64("BITSIZE", 1))
 )
 
 // GenerateRandomData returns secure random data with the given size
