@@ -1,0 +1,8 @@
+template: |
+  ## What’s Changed
+
+  **Disclaimer**: This is an automatically generated changelog draft for Kargo backend releases. 
+
+  $CHANGES
+
+  All contributors: $CONTRIBUTORS
