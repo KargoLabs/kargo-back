@@ -122,6 +122,8 @@ func NewTruck(truck Truck) (*Truck, error) {
 		return nil, ErrInvalidLocation
 	}
 
+	now := time.Now()
+
 	return &Truck{
 		TruckID:           random.GenerateID(TruckIDPrefix, random.StandardBitSize),
 		PartnerID:         truck.PartnerID,
@@ -134,7 +136,7 @@ func NewTruck(truck Truck) (*Truck, error) {
 		Location:          truck.Location,
 		Available:         true,
 		CompletedTrips:    0,
-		CreationDate:      time.Now(),
-		UpdateDate:        time.Now(),
+		CreationDate:      now,
+		UpdateDate:        now,
 	}, nil
 }
