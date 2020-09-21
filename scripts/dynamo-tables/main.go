@@ -45,6 +45,10 @@ var (
 			TableName:  "payment-methods",
 			TableIndex: "payment_method_id",
 		},
+		TableConfiguration{
+			TableName:  "trucks",
+			TableIndex: "truck_id",
+		},
 	}
 )
 
