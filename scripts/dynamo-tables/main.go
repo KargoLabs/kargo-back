@@ -42,10 +42,6 @@ var (
 			TableIndex: "payment_transaction_id",
 		},
 		TableConfiguration{
-			TableName:  "payment-methods",
-			TableIndex: "payment_method_id",
-		},
-		TableConfiguration{
 			TableName:  "trucks",
 			TableIndex: "truck_id",
 		},

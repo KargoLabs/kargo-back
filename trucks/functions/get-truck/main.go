@@ -18,6 +18,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	}
 
 	truck, err := storage.LoadTruck(ctx, body.Get("truck_id"))
+
 	if errors.Is(err, storage.ErrTruckNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
 	}

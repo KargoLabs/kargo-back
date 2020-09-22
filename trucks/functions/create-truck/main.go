@@ -23,12 +23,12 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 
 	year, err := strconv.Atoi(body.Get("year"))
 	if err != nil {
-		return apigateway.LogAndReturnError(models.ErrInvalidYear), nil
+		return apigateway.NewErrorResponse(400, models.ErrInvalidYear), nil
 	}
 
 	mileague, err := strconv.Atoi(body.Get("mileague"))
 	if err != nil {
-		return apigateway.LogAndReturnError(models.ErrInvalidMileague), nil
+		return apigateway.NewErrorResponse(400, models.ErrInvalidMileague), nil
 	}
 
 	partner, err := partnerStorage.LoadPartner(ctx, body.Get("partner_id"))

@@ -22,6 +22,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	}
 
 	truck, err := storage.LoadTruck(ctx, body.Get("truck_id"))
+
 	if errors.Is(err, storage.ErrTruckNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
 	}
@@ -44,7 +45,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	if body.Get("year") != "" {
 		year, err := strconv.Atoi(body.Get("year"))
 		if err != nil {
-			return apigateway.LogAndReturnError(models.ErrInvalidYear), nil
+			return apigateway.NewErrorResponse(400, models.ErrInvalidYear), nil
 		}
 
 		truck.Year = year
@@ -53,7 +54,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	if body.Get("mileague") != "" {
 		mileague, err := strconv.Atoi(body.Get("mileague"))
 		if err != nil {
-			return apigateway.LogAndReturnError(models.ErrInvalidMileague), nil
+			return apigateway.NewErrorResponse(400, models.ErrInvalidMileague), nil
 		}
 
 		truck.Mileague = mileague
@@ -62,7 +63,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	if body.Get("available") != "" {
 		available, err := strconv.ParseBool(body.Get("available"))
 		if err != nil {
-			return apigateway.LogAndReturnError(models.ErrInvalidAvailable), nil
+			return apigateway.NewErrorResponse(400, models.ErrInvalidAvailable), nil
 		}
 
 		truck.Available = available
@@ -72,7 +73,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		truckType := models.TruckType(body.Get("type"))
 		_, ok := models.ValidTruckTypes[truckType]
 		if !ok {
-			return apigateway.LogAndReturnError(models.ErrInvalidTruckType), nil
+			return apigateway.NewErrorResponse(400, models.ErrInvalidTruckType), nil
 		}
 		truck.Type = truckType
 	}
@@ -81,7 +82,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		location := trips.Region(body.Get("location"))
 		_, ok := trips.ValidRegions[location]
 		if !ok {
-			return apigateway.LogAndReturnError(models.ErrInvalidLocation), nil
+			return apigateway.NewErrorResponse(400, models.ErrInvalidLocation), nil
 		}
 		truck.Location = location
 	}
