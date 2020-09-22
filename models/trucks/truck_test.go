@@ -14,7 +14,6 @@ func TestNewTruckFail(t *testing.T) {
 		Brand:             "Freightliner",
 		Model:             "Cascadia",
 		Year:              2012,
-		Mileague:          200000,
 		Type:              "articulated",
 		Location:          "DO-33",
 	}
@@ -27,7 +26,6 @@ func TestNewTruckFail(t *testing.T) {
 		Brand:     "Freightliner",
 		Model:     "Cascadia",
 		Year:      2012,
-		Mileague:  200000,
 		Type:      "articulated",
 		Location:  "DO-33"}
 	truck, err = NewTruck(*truckParam)
@@ -39,7 +37,6 @@ func TestNewTruckFail(t *testing.T) {
 		RegistrationPlate: "12345678901",
 		Model:             "Cascadia",
 		Year:              2012,
-		Mileague:          200000,
 		Type:              "articulated",
 		Location:          "DO-33"}
 	truck, err = NewTruck(*truckParam)
@@ -51,7 +48,6 @@ func TestNewTruckFail(t *testing.T) {
 		RegistrationPlate: "12345678901",
 		Brand:             "Freightliner",
 		Year:              2012,
-		Mileague:          200000,
 		Type:              "articulated",
 		Location:          "DO-33"}
 	truck, err = NewTruck(*truckParam)
@@ -63,7 +59,6 @@ func TestNewTruckFail(t *testing.T) {
 		RegistrationPlate: "12345678901",
 		Brand:             "Freightliner",
 		Model:             "Cascadia",
-		Mileague:          200000,
 		Type:              "articulated",
 		Location:          "DO-33"}
 	truck, err = NewTruck(*truckParam)
@@ -76,19 +71,6 @@ func TestNewTruckFail(t *testing.T) {
 		Brand:             "Freightliner",
 		Model:             "Cascadia",
 		Year:              2012,
-		Type:              "articulated",
-		Location:          "DO-33"}
-	truck, err = NewTruck(*truckParam)
-	c.Nil(truck)
-	c.Equal(ErrInvalidMileague, err)
-
-	truckParam = &Truck{
-		PartnerID:         "partner01",
-		RegistrationPlate: "12345678901",
-		Brand:             "Freightliner",
-		Model:             "Cascadia",
-		Year:              2012,
-		Mileague:          200000,
 		Location:          "DO-33"}
 	truck, err = NewTruck(*truckParam)
 	c.Nil(truck)
@@ -100,7 +82,6 @@ func TestNewTruckFail(t *testing.T) {
 		Brand:             "Freightliner",
 		Model:             "Cascadia",
 		Year:              2012,
-		Mileague:          200000,
 		Type:              "invalid",
 		Location:          "DO-33"}
 	truck, err = NewTruck(*truckParam)
@@ -113,7 +94,6 @@ func TestNewTruckFail(t *testing.T) {
 		Brand:             "Freightliner",
 		Model:             "Cascadia",
 		Year:              2012,
-		Mileague:          200000,
 		Type:              "articulated"}
 	truck, err = NewTruck(*truckParam)
 	c.Nil(truck)
@@ -125,7 +105,6 @@ func TestNewTruckFail(t *testing.T) {
 		Brand:             "Freightliner",
 		Model:             "Cascadia",
 		Year:              2012,
-		Mileague:          200000,
 		Type:              "articulated",
 		Location:          "invalid"}
 	truck, err = NewTruck(*truckParam)
@@ -142,7 +121,6 @@ func TestNewTruck(t *testing.T) {
 		Brand:             "Freightliner",
 		Model:             "Cascadia",
 		Year:              2012,
-		Mileague:          200000,
 		Type:              "articulated",
 		Location:          "DO-33"}
 	truck, err := NewTruck(*truckParam)
@@ -152,7 +130,6 @@ func TestNewTruck(t *testing.T) {
 	c.Equal("Freightliner", truck.Brand)
 	c.Equal("Cascadia", truck.Model)
 	c.Equal(2012, truck.Year)
-	c.Equal(200000, truck.Mileague)
 	c.Equal("articulated", string(truck.Type))
 	c.Equal("DO-33", string(truck.Location))
 	c.Equal(0, truck.CompletedTrips)

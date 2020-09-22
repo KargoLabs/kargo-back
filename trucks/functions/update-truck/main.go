@@ -51,15 +51,6 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		truck.Year = year
 	}
 
-	if body.Get("mileague") != "" {
-		mileague, err := strconv.Atoi(body.Get("mileague"))
-		if err != nil {
-			return apigateway.NewErrorResponse(400, models.ErrInvalidMileague), nil
-		}
-
-		truck.Mileague = mileague
-	}
-
 	if body.Get("available") != "" {
 		available, err := strconv.ParseBool(body.Get("available"))
 		if err != nil {

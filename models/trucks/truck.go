@@ -21,8 +21,6 @@ var (
 	ErrMissingBrand = errors.New("missing brand parameter")
 	// ErrMissingModel error when truck_model is missing
 	ErrMissingModel = errors.New("missing model parameter")
-	// ErrMissingMileague error when truck mileague is missing
-	ErrMissingMileague = errors.New("missing mileague parameter")
 	// ErrMissingLocation error when truck location is missing
 	ErrMissingLocation = errors.New("missing location parameter")
 	// ErrMissingAvailable error when truck avaliability is missing
@@ -33,8 +31,6 @@ var (
 	ErrMissingTruckType = errors.New("missing truck type parameter")
 	// ErrInvalidYear error when an invalid truck year is given
 	ErrInvalidYear = errors.New("invalid year parameter")
-	// ErrInvalidMileague error when an invalid truck mileague is given
-	ErrInvalidMileague = errors.New("invalid mileague parameter")
 	// ErrInvalidTruckType error when an invalid truck type is given
 	ErrInvalidTruckType = errors.New("invalid truck type parameter")
 	// ErrInvalidLocation error when an invalid truck location is given
@@ -73,7 +69,6 @@ type Truck struct {
 	Brand             string       `json:"brand"`
 	Model             string       `json:"model"`
 	Year              int          `json:"year"`
-	Mileague          int          `json:"mileague"`
 	CompletedTrips    int          `json:"completed_trips"`
 	Available         bool         `json:"available"`
 	Type              TruckType    `json:"type"`
@@ -104,10 +99,6 @@ func NewTruck(truck Truck) (*Truck, error) {
 		return nil, ErrInvalidYear
 	}
 
-	if truck.Mileague <= 0 {
-		return nil, ErrInvalidMileague
-	}
-
 	if truck.Type == "" {
 		return nil, ErrMissingTruckType
 	}
@@ -133,7 +124,6 @@ func NewTruck(truck Truck) (*Truck, error) {
 		Brand:             truck.Brand,
 		Model:             truck.Model,
 		Year:              truck.Year,
-		Mileague:          truck.Mileague,
 		Type:              truck.Type,
 		Location:          truck.Location,
 		Available:         true,

@@ -26,11 +26,6 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.NewErrorResponse(400, models.ErrInvalidYear), nil
 	}
 
-	mileague, err := strconv.Atoi(body.Get("mileague"))
-	if err != nil {
-		return apigateway.NewErrorResponse(400, models.ErrInvalidMileague), nil
-	}
-
 	partner, err := partnerStorage.LoadPartner(ctx, body.Get("partner_id"))
 	if errors.Is(err, partnerStorage.ErrPartnerNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
@@ -45,7 +40,6 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		Brand:             body.Get("brand"),
 		Model:             body.Get("model"),
 		Year:              year,
-		Mileague:          mileague,
 		Type:              models.TruckType(body.Get("type")),
 		Location:          trips.Region(body.Get("location")),
 	}
