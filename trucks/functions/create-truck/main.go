@@ -52,7 +52,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 
 	truck, err := models.NewTruck(*truckParam)
 	if err != nil {
-		return apigateway.LogAndReturnError(err), nil
+		return apigateway.NewErrorResponse(400, err), nil
 	}
 
 	err = storage.PutTruck(ctx, truck)
