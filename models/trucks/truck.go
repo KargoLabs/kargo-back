@@ -2,8 +2,8 @@ package models
 
 import (
 	"errors"
+	trips "kargo-back/models/trips"
 	"kargo-back/shared/random"
-	trips "kargo-back/shared/trips-models"
 	"time"
 )
 
