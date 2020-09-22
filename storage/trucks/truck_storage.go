@@ -3,8 +3,8 @@ package storage
 import (
 	"context"
 	"errors"
+	models "kargo-back/models/trucks"
 	"kargo-back/shared/environment"
-	models "kargo-back/shared/truck-models"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"

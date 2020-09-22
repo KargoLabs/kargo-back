@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"errors"
+	models "kargo-back/models/transactions"
 	"kargo-back/shared/apigateway"
-	models "kargo-back/shared/transaction-models"
 	storage "kargo-back/storage/transactions"
 	"net/url"
 

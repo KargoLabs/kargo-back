@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
+	models "kargo-back/models/clients"
 	"kargo-back/shared/apigateway"
-	models "kargo-back/shared/clients-models"
 	storage "kargo-back/storage/clients"
 	"net/url"
 	"time"

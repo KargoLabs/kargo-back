@@ -3,8 +3,8 @@ package storage
 import (
 	"context"
 	"errors"
+	models "kargo-back/models/partners"
 	"kargo-back/shared/environment"
-	models "kargo-back/shared/partners-models"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"

@@ -8,6 +8,7 @@ Repository of back end code for the Kargo Project
  - Various scripts: `/scripts/<script-usage>`
  - Service code itself: `/<service-name>/functions`
  - Storage libraries: `/storage`
+ - Models libraries: `/models`
 
 ## Deploy instructions 
  For deployment follow the guide provided [here](https://github.com/aws/aws-lambda-go/blob/master/README.md)

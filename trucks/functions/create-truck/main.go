@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"errors"
+	models "kargo-back/models/trucks"
 	"kargo-back/shared/apigateway"
 	trips "kargo-back/shared/trips-models"
-	models "kargo-back/shared/truck-models"
 	partnerStorage "kargo-back/storage/partners"
 	storage "kargo-back/storage/trucks"
 	"net/url"
