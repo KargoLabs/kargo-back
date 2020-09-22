@@ -27,6 +27,8 @@ var (
 	ErrMissingLocation = errors.New("missing location parameter")
 	// ErrMissingAvailable error when truck avaliability is missing
 	ErrMissingAvailable = errors.New("missing available parameter")
+	// ErrInvalidAvailable error when an invalid truck available param is given
+	ErrInvalidAvailable = errors.New("invalid available parameter")
 	// ErrMissingTruckType error when an invalid truck type is given
 	ErrMissingTruckType = errors.New("missing truck type parameter")
 	// ErrInvalidYear error when an invalid truck year is given
