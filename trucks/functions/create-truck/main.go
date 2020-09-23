@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"errors"
+	trips "kargo-back/models/trips"
 	models "kargo-back/models/trucks"
 	"kargo-back/shared/apigateway"
-	trips "kargo-back/shared/trips-models"
 	partnerStorage "kargo-back/storage/partners"
 	storage "kargo-back/storage/trucks"
 	"net/url"
@@ -26,6 +26,16 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.NewErrorResponse(400, models.ErrInvalidYear), nil
 	}
 
+	regionsParam, ok := body["regions"]
+	if !ok || regionsParam[0] == "" {
+		return apigateway.NewErrorResponse(400, models.ErrMissingRegion), nil
+	}
+
+	regions := make([]trips.Region, len(regionsParam))
+	for i := range regionsParam {
+		regions[i] = trips.Region(regionsParam[i])
+	}
+
 	partner, err := partnerStorage.LoadPartner(ctx, body.Get("partner_id"))
 	if errors.Is(err, partnerStorage.ErrPartnerNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
@@ -42,6 +52,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		Year:              year,
 		Type:              models.TruckType(body.Get("type")),
 		Location:          trips.Region(body.Get("location")),
+		Regions:           regions,
 	}
 
 	truck, err := models.NewTruck(*truckParam)

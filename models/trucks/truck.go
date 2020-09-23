@@ -35,6 +35,10 @@ var (
 	ErrInvalidTruckType = errors.New("invalid truck type parameter")
 	// ErrInvalidLocation error when an invalid truck location is given
 	ErrInvalidLocation = errors.New("invalid truck location")
+	// ErrInvalidRegion error when an invalid truck region is given
+	ErrInvalidRegion = errors.New("invalid truck region")
+	// ErrMissingRegion error when truck regions is missing
+	ErrMissingRegion = errors.New("invalid truck region")
 )
 
 // TruckType is the type handler for the different types of trucks
@@ -49,32 +53,39 @@ const (
 	TruckTypeTrailer TruckType = "trailer"
 	// TruckTypeHighway is a truck of type Highway
 	TruckTypeHighway TruckType = "highway"
+	// TruckTypeRefrigerated is a truck of type refrigerated
+	TruckTypeRefrigerated TruckType = "refrigerated"
+	// TruckTypeAnimal is a truck which is able to carry animals
+	TruckTypeAnimal TruckType = "animal"
 )
 
 var (
 	// ValidTruckTypes is the map of all the valid truck types
 	ValidTruckTypes = map[TruckType]bool{
-		TruckTypeRigid:       true,
-		TruckTypeArticulated: true,
-		TruckTypeTrailer:     true,
-		TruckTypeHighway:     true,
+		TruckTypeRigid:        true,
+		TruckTypeArticulated:  true,
+		TruckTypeTrailer:      true,
+		TruckTypeHighway:      true,
+		TruckTypeRefrigerated: true,
+		TruckTypeAnimal:       true,
 	}
 )
 
 // Truck is the struct handler for a truck
 type Truck struct {
-	TruckID           string       `json:"truck_id"`
-	PartnerID         string       `json:"partner_id"`
-	RegistrationPlate string       `json:"registration_id"`
-	Brand             string       `json:"brand"`
-	Model             string       `json:"model"`
-	Year              int          `json:"year"`
-	CompletedTrips    int          `json:"completed_trips"`
-	Available         bool         `json:"available"`
-	Type              TruckType    `json:"type"`
-	Location          trips.Region `json:"location"`
-	CreationDate      time.Time    `json:"creation_date"`
-	UpdateDate        time.Time    `json:"update_date"`
+	TruckID           string         `json:"truck_id"`
+	PartnerID         string         `json:"partner_id"`
+	RegistrationPlate string         `json:"registration_id"`
+	Brand             string         `json:"brand"`
+	Model             string         `json:"model"`
+	Year              int            `json:"year"`
+	CompletedTrips    int            `json:"completed_trips"`
+	Available         bool           `json:"available"`
+	Type              TruckType      `json:"type"`
+	Location          trips.Region   `json:"location"`
+	CreationDate      time.Time      `json:"creation_date"`
+	UpdateDate        time.Time      `json:"update_date"`
+	Regions           []trips.Region `json:"regions"`
 }
 
 // NewTruck returns a cleaned Truck structure with given values
@@ -115,6 +126,17 @@ func NewTruck(truck Truck) (*Truck, error) {
 		return nil, ErrInvalidLocation
 	}
 
+	if len(truck.Regions) == 0 {
+		return nil, ErrMissingRegion
+	}
+
+	for _, region := range truck.Regions {
+		_, ok := trips.ValidRegions[region]
+		if !ok {
+			return nil, ErrInvalidRegion
+		}
+	}
+
 	now := time.Now()
 
 	return &Truck{
@@ -126,6 +148,7 @@ func NewTruck(truck Truck) (*Truck, error) {
 		Year:              truck.Year,
 		Type:              truck.Type,
 		Location:          truck.Location,
+		Regions:           truck.Regions,
 		Available:         true,
 		CompletedTrips:    0,
 		CreationDate:      now,

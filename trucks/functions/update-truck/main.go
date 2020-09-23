@@ -78,6 +78,15 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		truck.Location = location
 	}
 
+	regionsParam, ok := body["regions"]
+	if ok {
+		regions := make([]trips.Region, len(regionsParam))
+		for i := range regionsParam {
+			regions[i] = trips.Region(regionsParam[i])
+		}
+		truck.Regions = regions
+	}
+
 	truck.UpdateDate = time.Now()
 
 	err = storage.PutTruck(ctx, truck)
