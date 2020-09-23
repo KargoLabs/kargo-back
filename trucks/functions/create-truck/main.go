@@ -26,9 +26,9 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.NewErrorResponse(400, models.ErrInvalidYear), nil
 	}
 
-	volume, err := strconv.ParseFloat(body.Get("volume"), 32)
+	maxVolume, err := strconv.ParseFloat(body.Get("max_volume"), 32)
 	if err != nil {
-		return apigateway.NewErrorResponse(400, models.ErrInvalidVolume), nil
+		return apigateway.NewErrorResponse(400, models.ErrInvalidMaxVolume), nil
 	}
 
 	maxWeight, err := strconv.ParseFloat(body.Get("max_weight"), 32)
@@ -63,7 +63,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		Type:              models.TruckType(body.Get("type")),
 		Location:          trips.Region(body.Get("location")),
 		Regions:           regions,
-		Volume:            float32(volume),
+		MaxVolume:         float32(maxVolume),
 		MaxWeight:         float32(maxWeight),
 	}
 

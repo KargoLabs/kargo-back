@@ -39,12 +39,12 @@ var (
 	ErrInvalidRegion = errors.New("invalid truck region")
 	// ErrMissingRegion error when truck regions is missing
 	ErrMissingRegion = errors.New("invalid truck region")
-	// ErrMissingVolume error when truck volume is missing
-	ErrMissingVolume = errors.New("invalid truck volume")
+	// ErrMissingMaxVolume error when truck max volume is missing
+	ErrMissingMaxVolume = errors.New("invalid truck max volume")
 	// ErrMissingMaxWeight error when truck max weight is missing
 	ErrMissingMaxWeight = errors.New("invalid truck max weight")
-	// ErrInvalidVolume error when an invalid truck volume is given
-	ErrInvalidVolume = errors.New("invalid truck volume")
+	// ErrInvalidMaxVolume error when an invalid truck max volume is given
+	ErrInvalidMaxVolume = errors.New("invalid truck max volume")
 	// ErrInvalidMaxWeight error when an invalid truck max weight is given
 	ErrInvalidMaxWeight = errors.New("invalid truck max weight")
 )
@@ -89,7 +89,7 @@ type Truck struct {
 	Year              int            `json:"year"`
 	CompletedTrips    int            `json:"completed_trips"`
 	Available         bool           `json:"available"`
-	Volume            float32        `json:"volume"`
+	MaxVolume         float32        `json:"max_volume"`
 	MaxWeight         float32        `json:"max_weight"`
 	Type              TruckType      `json:"type"`
 	Location          trips.Region   `json:"location"`
@@ -147,8 +147,8 @@ func NewTruck(truck Truck) (*Truck, error) {
 		}
 	}
 
-	if truck.Volume <= 0 {
-		return nil, ErrInvalidVolume
+	if truck.MaxVolume <= 0 {
+		return nil, ErrInvalidMaxVolume
 	}
 
 	if truck.MaxWeight <= 0 {
@@ -169,7 +169,7 @@ func NewTruck(truck Truck) (*Truck, error) {
 		Regions:           truck.Regions,
 		Available:         true,
 		CompletedTrips:    0,
-		Volume:            truck.Volume,
+		MaxVolume:         truck.MaxVolume,
 		MaxWeight:         truck.MaxWeight,
 		CreationDate:      now,
 		UpdateDate:        now,

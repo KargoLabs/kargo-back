@@ -51,13 +51,13 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		truck.Year = year
 	}
 
-	if body.Get("volume") != "" {
-		volume, err := strconv.ParseFloat(body.Get("volume"), 32)
+	if body.Get("max_volume") != "" {
+		maxVolume, err := strconv.ParseFloat(body.Get("max_volume"), 32)
 		if err != nil {
-			return apigateway.NewErrorResponse(400, models.ErrInvalidVolume), nil
+			return apigateway.NewErrorResponse(400, models.ErrInvalidMaxVolume), nil
 		}
 
-		truck.Volume = float32(volume)
+		truck.MaxVolume = float32(maxVolume)
 	}
 
 	if body.Get("max_weight") != "" {
