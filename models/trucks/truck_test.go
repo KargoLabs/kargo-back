@@ -17,6 +17,8 @@ func TestNewTruckFail(t *testing.T) {
 		Year:              2012,
 		Type:              "articulated",
 		Location:          "DO-33",
+		MaxWeight:         1234,
+		Volume:            1234,
 		Regions:           []models.Region{"DO-33"}}
 	truck, err := NewTruck(*truckParam)
 	c.Nil(truck)
@@ -29,6 +31,8 @@ func TestNewTruckFail(t *testing.T) {
 		Year:      2012,
 		Type:      "articulated",
 		Location:  "DO-33",
+		MaxWeight: 1234,
+		Volume:    1234,
 		Regions:   []models.Region{"DO-33"}}
 	truck, err = NewTruck(*truckParam)
 	c.Nil(truck)
@@ -41,6 +45,8 @@ func TestNewTruckFail(t *testing.T) {
 		Year:              2012,
 		Type:              "articulated",
 		Location:          "DO-33",
+		MaxWeight:         1234,
+		Volume:            1234,
 		Regions:           []models.Region{"DO-33"}}
 	truck, err = NewTruck(*truckParam)
 	c.Nil(truck)
@@ -53,6 +59,8 @@ func TestNewTruckFail(t *testing.T) {
 		Year:              2012,
 		Type:              "articulated",
 		Location:          "DO-33",
+		MaxWeight:         1234,
+		Volume:            1234,
 		Regions:           []models.Region{"DO-33"}}
 	truck, err = NewTruck(*truckParam)
 	c.Nil(truck)
@@ -65,6 +73,8 @@ func TestNewTruckFail(t *testing.T) {
 		Model:             "Cascadia",
 		Type:              "articulated",
 		Location:          "DO-33",
+		MaxWeight:         1234,
+		Volume:            1234,
 		Regions:           []models.Region{"DO-33"}}
 	truck, err = NewTruck(*truckParam)
 	c.Nil(truck)
@@ -77,6 +87,8 @@ func TestNewTruckFail(t *testing.T) {
 		Model:             "Cascadia",
 		Year:              2012,
 		Location:          "DO-33",
+		MaxWeight:         1234,
+		Volume:            1234,
 		Regions:           []models.Region{"DO-33"}}
 	truck, err = NewTruck(*truckParam)
 	c.Nil(truck)
@@ -90,6 +102,8 @@ func TestNewTruckFail(t *testing.T) {
 		Year:              2012,
 		Type:              "invalid",
 		Location:          "DO-33",
+		MaxWeight:         1234,
+		Volume:            1234,
 		Regions:           []models.Region{"DO-33"}}
 	truck, err = NewTruck(*truckParam)
 	c.Nil(truck)
@@ -102,6 +116,8 @@ func TestNewTruckFail(t *testing.T) {
 		Model:             "Cascadia",
 		Year:              2012,
 		Type:              "articulated",
+		MaxWeight:         1234,
+		Volume:            1234,
 		Regions:           []models.Region{"DO-33"}}
 	truck, err = NewTruck(*truckParam)
 	c.Nil(truck)
@@ -115,6 +131,8 @@ func TestNewTruckFail(t *testing.T) {
 		Year:              2012,
 		Type:              "articulated",
 		Location:          "invalid",
+		MaxWeight:         1234,
+		Volume:            1234,
 		Regions:           []models.Region{"DO-33"}}
 	truck, err = NewTruck(*truckParam)
 	c.Nil(truck)
@@ -127,6 +145,8 @@ func TestNewTruckFail(t *testing.T) {
 		Model:             "Cascadia",
 		Year:              2012,
 		Type:              "articulated",
+		MaxWeight:         1234,
+		Volume:            1234,
 		Location:          "DO-33"}
 	truck, err = NewTruck(*truckParam)
 	c.Nil(truck)
@@ -140,10 +160,40 @@ func TestNewTruckFail(t *testing.T) {
 		Year:              2012,
 		Type:              "articulated",
 		Location:          "DO-33",
+		MaxWeight:         1234,
+		Volume:            1234,
 		Regions:           []models.Region{"invalid"}}
 	truck, err = NewTruck(*truckParam)
 	c.Nil(truck)
 	c.Equal(ErrInvalidRegion, err)
+
+	truckParam = &Truck{
+		PartnerID:         "partner01",
+		RegistrationPlate: "12345678901",
+		Brand:             "Freightliner",
+		Model:             "Cascadia",
+		Year:              2012,
+		Type:              "articulated",
+		Location:          "DO-33",
+		Volume:            1234,
+		Regions:           []models.Region{"DO-33"}}
+	truck, err = NewTruck(*truckParam)
+	c.Nil(truck)
+	c.Equal(ErrInvalidMaxWeight, err)
+
+	truckParam = &Truck{
+		PartnerID:         "partner01",
+		RegistrationPlate: "12345678901",
+		Brand:             "Freightliner",
+		Model:             "Cascadia",
+		Year:              2012,
+		Type:              "articulated",
+		Location:          "DO-33",
+		MaxWeight:         1234,
+		Regions:           []models.Region{"DO-33"}}
+	truck, err = NewTruck(*truckParam)
+	c.Nil(truck)
+	c.Equal(ErrInvalidVolume, err)
 }
 
 func TestNewTruck(t *testing.T) {
@@ -157,6 +207,8 @@ func TestNewTruck(t *testing.T) {
 		Year:              2012,
 		Type:              "articulated",
 		Location:          "DO-33",
+		MaxWeight:         1234,
+		Volume:            1234,
 		Regions:           []models.Region{"DO-33"}}
 	truck, err := NewTruck(*truckParam)
 	c.Nil(err)
