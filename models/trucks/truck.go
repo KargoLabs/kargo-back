@@ -23,8 +23,8 @@ var (
 	ErrMissingModel = errors.New("missing model parameter")
 	// ErrMissingLocation error when truck location is missing
 	ErrMissingLocation = errors.New("missing location parameter")
-	// ErrMissingAvailable error when truck avaliability is missing
-	ErrMissingAvailable = errors.New("missing available parameter")
+	// ErrInvalidAvailable error when an invalid truck available param is given
+	ErrInvalidAvailable = errors.New("invalid available parameter")
 	// ErrMissingTruckType error when an invalid truck type is given
 	ErrMissingTruckType = errors.New("missing truck type parameter")
 	// ErrInvalidYear error when an invalid truck year is given
@@ -83,7 +83,7 @@ type Truck struct {
 	Available         bool           `json:"available"`
 	MaxVolume         float64        `json:"max_volume"`
 	MaxWeight         float64        `json:"max_weight"`
-	Type              TruckType      `json:"type"`
+	Type              TruckType      `json:"truck_type"`
 	CreationDate      time.Time      `json:"creation_date"`
 	UpdateDate        time.Time      `json:"update_date"`
 	Regions           []trips.Region `json:"regions"`
