@@ -52,21 +52,21 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	}
 
 	if body.Get("max_volume") != "" {
-		maxVolume, err := strconv.ParseFloat(body.Get("max_volume"), 32)
+		maxVolume, err := strconv.ParseFloat(body.Get("max_volume"), 64)
 		if err != nil {
 			return apigateway.NewErrorResponse(400, models.ErrInvalidMaxVolume), nil
 		}
 
-		truck.MaxVolume = float32(maxVolume)
+		truck.MaxVolume = maxVolume
 	}
 
 	if body.Get("max_weight") != "" {
-		maxWeight, err := strconv.ParseFloat(body.Get("max_weight"), 32)
+		maxWeight, err := strconv.ParseFloat(body.Get("max_weight"), 64)
 		if err != nil {
 			return apigateway.NewErrorResponse(400, models.ErrInvalidMaxWeight), nil
 		}
 
-		truck.MaxWeight = float32(maxWeight)
+		truck.MaxWeight = maxWeight
 	}
 
 	if body.Get("available") != "" {
@@ -85,15 +85,6 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 			return apigateway.NewErrorResponse(400, models.ErrInvalidTruckType), nil
 		}
 		truck.Type = truckType
-	}
-
-	if body.Get("location") != "" {
-		location := trips.Region(body.Get("location"))
-		_, ok := trips.ValidRegions[location]
-		if !ok {
-			return apigateway.NewErrorResponse(400, models.ErrInvalidLocation), nil
-		}
-		truck.Location = location
 	}
 
 	regionsParam, ok := body["regions"]

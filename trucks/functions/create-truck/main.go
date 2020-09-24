@@ -26,12 +26,12 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.NewErrorResponse(400, models.ErrInvalidYear), nil
 	}
 
-	maxVolume, err := strconv.ParseFloat(body.Get("max_volume"), 32)
+	maxVolume, err := strconv.ParseFloat(body.Get("max_volume"), 64)
 	if err != nil {
 		return apigateway.NewErrorResponse(400, models.ErrInvalidMaxVolume), nil
 	}
 
-	maxWeight, err := strconv.ParseFloat(body.Get("max_weight"), 32)
+	maxWeight, err := strconv.ParseFloat(body.Get("max_weight"), 64)
 	if err != nil {
 		return apigateway.NewErrorResponse(400, models.ErrInvalidMaxWeight), nil
 	}
@@ -54,20 +54,19 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	truckParam := &models.Truck{
+	truck := &models.Truck{
 		PartnerID:         partner.PartnerID,
 		RegistrationPlate: body.Get("registration_plate"),
 		Brand:             body.Get("brand"),
 		Model:             body.Get("model"),
 		Year:              year,
 		Type:              models.TruckType(body.Get("type")),
-		Location:          trips.Region(body.Get("location")),
 		Regions:           regions,
-		MaxVolume:         float32(maxVolume),
-		MaxWeight:         float32(maxWeight),
+		MaxVolume:         maxVolume,
+		MaxWeight:         maxWeight,
 	}
 
-	truck, err := models.NewTruck(*truckParam)
+	err = truck.ValidateTruck()
 	if err != nil {
 		return apigateway.NewErrorResponse(400, err), nil
 	}
