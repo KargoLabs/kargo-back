@@ -27,6 +27,10 @@ var (
 	ErrInvalidAvailable = errors.New("invalid available parameter")
 	// ErrMissingTruckType error when an invalid truck type is given
 	ErrMissingTruckType = errors.New("missing truck type parameter")
+	// ErrInvalidBasePrice error when base price is invalid
+	ErrInvalidBasePrice = errors.New("invalid base price type parameter")
+	// ErrInvalidPerRegionPrice error when per region price is invalid
+	ErrInvalidPerRegionPrice = errors.New("invalid per region price type parameter")
 	// ErrInvalidYear error when an invalid truck year is given
 	ErrInvalidYear = errors.New("invalid year parameter")
 	// ErrInvalidTruckType error when an invalid truck type is given
@@ -83,6 +87,8 @@ type Truck struct {
 	Available         bool           `json:"available"`
 	MaxVolume         float64        `json:"max_volume"`
 	MaxWeight         float64        `json:"max_weight"`
+	BasePrice         float64        `json:"base_price"`
+	PerRegionPrice    float64        `json:"per_region_price"`
 	Type              TruckType      `json:"truck_type"`
 	CreationDate      time.Time      `json:"creation_date"`
 	UpdateDate        time.Time      `json:"update_date"`
@@ -136,6 +142,14 @@ func (truck *Truck) ValidateTruck() error {
 
 	if truck.MaxWeight <= 0 {
 		return ErrInvalidMaxWeight
+	}
+
+	if truck.BasePrice <= 0 {
+		return ErrInvalidBasePrice
+	}
+
+	if truck.PerRegionPrice <= 0 {
+		return ErrInvalidPerRegionPrice
 	}
 
 	truck.Available = true

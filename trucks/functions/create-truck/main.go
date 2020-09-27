@@ -36,6 +36,16 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.NewErrorResponse(400, models.ErrInvalidMaxWeight), nil
 	}
 
+	basePrice, err := strconv.ParseFloat(body.Get("base_price"), 64)
+	if err != nil {
+		return apigateway.NewErrorResponse(400, models.ErrInvalidBasePrice), nil
+	}
+
+	perRegionPrice, err := strconv.ParseFloat(body.Get("per_region_price"), 64)
+	if err != nil {
+		return apigateway.NewErrorResponse(400, models.ErrInvalidPerRegionPrice), nil
+	}
+
 	regionsParam, ok := body["regions"]
 	if !ok || regionsParam[0] == "" {
 		return apigateway.NewErrorResponse(400, models.ErrMissingRegion), nil
@@ -50,6 +60,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	if errors.Is(err, partnerStorage.ErrPartnerNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
 	}
+
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
 	}
@@ -64,6 +75,8 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		Regions:           regions,
 		MaxVolume:         maxVolume,
 		MaxWeight:         maxWeight,
+		BasePrice:         basePrice,
+		PerRegionPrice:    perRegionPrice,
 	}
 
 	err = truck.ValidateTruck()

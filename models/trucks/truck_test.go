@@ -18,19 +18,23 @@ func TestNewTruckFail(t *testing.T) {
 		Type:              "articulated",
 		MaxWeight:         1234,
 		MaxVolume:         1234,
+		BasePrice:         1234,
+		PerRegionPrice:    1234,
 		Regions:           []models.Region{"DO-33"}}
 	err := truckParam.ValidateTruck()
 	c.Equal(ErrMissingPartnerID, err)
 
 	truckParam = &Truck{
-		PartnerID: "partner01",
-		Brand:     "Freightliner",
-		Model:     "Cascadia",
-		Year:      2012,
-		Type:      "articulated",
-		MaxWeight: 1234,
-		MaxVolume: 1234,
-		Regions:   []models.Region{"DO-33"}}
+		PartnerID:      "partner01",
+		Brand:          "Freightliner",
+		Model:          "Cascadia",
+		Year:           2012,
+		Type:           "articulated",
+		MaxWeight:      1234,
+		MaxVolume:      1234,
+		BasePrice:      1234,
+		PerRegionPrice: 1234,
+		Regions:        []models.Region{"DO-33"}}
 	err = truckParam.ValidateTruck()
 	c.Equal(ErrMissingRegistrationPlate, err)
 
@@ -42,6 +46,8 @@ func TestNewTruckFail(t *testing.T) {
 		Type:              "articulated",
 		MaxWeight:         1234,
 		MaxVolume:         1234,
+		BasePrice:         1234,
+		PerRegionPrice:    1234,
 		Regions:           []models.Region{"DO-33"}}
 	err = truckParam.ValidateTruck()
 	c.Equal(ErrMissingBrand, err)
@@ -54,6 +60,8 @@ func TestNewTruckFail(t *testing.T) {
 		Type:              "articulated",
 		MaxWeight:         1234,
 		MaxVolume:         1234,
+		BasePrice:         1234,
+		PerRegionPrice:    1234,
 		Regions:           []models.Region{"DO-33"}}
 	err = truckParam.ValidateTruck()
 	c.Equal(ErrMissingModel, err)
@@ -66,6 +74,8 @@ func TestNewTruckFail(t *testing.T) {
 		Type:              "articulated",
 		MaxWeight:         1234,
 		MaxVolume:         1234,
+		BasePrice:         1234,
+		PerRegionPrice:    1234,
 		Regions:           []models.Region{"DO-33"}}
 	err = truckParam.ValidateTruck()
 	c.Equal(ErrInvalidYear, err)
@@ -78,6 +88,8 @@ func TestNewTruckFail(t *testing.T) {
 		Year:              2012,
 		MaxWeight:         1234,
 		MaxVolume:         1234,
+		BasePrice:         1234,
+		PerRegionPrice:    1234,
 		Regions:           []models.Region{"DO-33"}}
 	err = truckParam.ValidateTruck()
 	c.Equal(ErrMissingTruckType, err)
@@ -91,6 +103,8 @@ func TestNewTruckFail(t *testing.T) {
 		Type:              "invalid",
 		MaxWeight:         1234,
 		MaxVolume:         1234,
+		BasePrice:         1234,
+		PerRegionPrice:    1234,
 		Regions:           []models.Region{"DO-33"}}
 	err = truckParam.ValidateTruck()
 	c.Equal(ErrInvalidTruckType, err)
@@ -103,7 +117,9 @@ func TestNewTruckFail(t *testing.T) {
 		Year:              2012,
 		Type:              "articulated",
 		MaxWeight:         1234,
-		MaxVolume:         1234}
+		MaxVolume:         1234,
+		BasePrice:         1234,
+		PerRegionPrice:    1234}
 	err = truckParam.ValidateTruck()
 	c.Equal(ErrMissingRegion, err)
 
@@ -116,6 +132,8 @@ func TestNewTruckFail(t *testing.T) {
 		Type:              "articulated",
 		MaxWeight:         1234,
 		MaxVolume:         1234,
+		BasePrice:         1234,
+		PerRegionPrice:    1234,
 		Regions:           []models.Region{"invalid"}}
 	err = truckParam.ValidateTruck()
 	c.Equal(ErrInvalidRegion, err)
@@ -128,6 +146,8 @@ func TestNewTruckFail(t *testing.T) {
 		Year:              2012,
 		Type:              "articulated",
 		MaxVolume:         1234,
+		BasePrice:         1234,
+		PerRegionPrice:    1234,
 		Regions:           []models.Region{"DO-33"}}
 	err = truckParam.ValidateTruck()
 	c.Equal(ErrInvalidMaxWeight, err)
@@ -140,9 +160,39 @@ func TestNewTruckFail(t *testing.T) {
 		Year:              2012,
 		Type:              "articulated",
 		MaxWeight:         1234,
+		BasePrice:         1234,
+		PerRegionPrice:    1234,
 		Regions:           []models.Region{"DO-33"}}
 	err = truckParam.ValidateTruck()
 	c.Equal(ErrInvalidMaxVolume, err)
+
+	truckParam = &Truck{
+		PartnerID:         "partner01",
+		RegistrationPlate: "12345678901",
+		Brand:             "Freightliner",
+		Model:             "Cascadia",
+		Year:              2012,
+		Type:              "articulated",
+		MaxWeight:         1234,
+		MaxVolume:         1234,
+		PerRegionPrice:    1234,
+		Regions:           []models.Region{"DO-33"}}
+	err = truckParam.ValidateTruck()
+	c.Equal(ErrInvalidBasePrice, err)
+
+	truckParam = &Truck{
+		PartnerID:         "partner01",
+		RegistrationPlate: "12345678901",
+		Brand:             "Freightliner",
+		Model:             "Cascadia",
+		Year:              2012,
+		Type:              "articulated",
+		MaxWeight:         1234,
+		MaxVolume:         1234,
+		BasePrice:         1234,
+		Regions:           []models.Region{"DO-33"}}
+	err = truckParam.ValidateTruck()
+	c.Equal(ErrInvalidPerRegionPrice, err)
 }
 
 func TestNewTruck(t *testing.T) {
@@ -157,6 +207,8 @@ func TestNewTruck(t *testing.T) {
 		Type:              "articulated",
 		MaxWeight:         1234,
 		MaxVolume:         1234,
+		BasePrice:         1234,
+		PerRegionPrice:    1234,
 		Regions:           []models.Region{"DO-33"}}
 
 	err := truck.ValidateTruck()

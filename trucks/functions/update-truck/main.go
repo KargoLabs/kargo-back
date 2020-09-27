@@ -22,10 +22,10 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	}
 
 	truck, err := storage.LoadTruck(ctx, body.Get("truck_id"))
-
 	if errors.Is(err, storage.ErrTruckNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
 	}
+
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
 	}
@@ -67,6 +67,24 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		}
 
 		truck.MaxWeight = maxWeight
+	}
+
+	if body.Get("base_price") != "" {
+		basePrice, err := strconv.ParseFloat(body.Get("base_price"), 64)
+		if err != nil {
+			return apigateway.NewErrorResponse(400, models.ErrInvalidBasePrice), nil
+		}
+
+		truck.BasePrice = basePrice
+	}
+
+	if body.Get("per_region_price") != "" {
+		perRegionPrice, err := strconv.ParseFloat(body.Get("per_region_price"), 64)
+		if err != nil {
+			return apigateway.NewErrorResponse(400, models.ErrInvalidPerRegionPrice), nil
+		}
+
+		truck.PerRegionPrice = perRegionPrice
 	}
 
 	if body.Get("available") != "" {
