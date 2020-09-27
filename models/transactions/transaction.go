@@ -24,20 +24,20 @@ var (
 type TransactionStatus string
 
 const (
-	// TransactionStatusStarted is when a trip has started
-	TransactionStatusStarted TransactionStatus = "started"
-	// TransactionStatusInProgress is when a trip is in progress
-	TransactionStatusInProgress TransactionStatus = "in progress"
-	// TransactionStatusCompleted is when a trip has been completed
+	// TransactionStatusOnHold represents when a transaction is on hold
+	TransactionStatusOnHold TransactionStatus = "on hold"
+	// TransactionStatusReversed represents when a transaction is reversed
+	TransactionStatusReversed TransactionStatus = "reversed"
+	// TransactionStatusCompleted represents when a transaction is completed
 	TransactionStatusCompleted TransactionStatus = "completed"
 )
 
 var (
-	// ValidTransactionStatus represents a map of all the valid transaction status
-	ValidTransactionStatus = map[TransactionStatus]bool{
-		TransactionStatusStarted:    true,
-		TransactionStatusInProgress: true,
-		TransactionStatusCompleted:  true,
+	// ValidTransactionStatuses represents a map of all the valid transaction status
+	ValidTransactionStatuses = map[TransactionStatus]bool{
+		TransactionStatusOnHold:    true,
+		TransactionStatusReversed:  true,
+		TransactionStatusCompleted: true,
 	}
 )
 
@@ -46,13 +46,13 @@ type Transaction struct {
 	TransactionID string            `json:"transaction_id"`
 	PartnerID     string            `json:"partner_id"`
 	ClientID      string            `json:"client_id"`
-	Amount        int               `json:"amount"`
+	Amount        float64           `json:"amount"`
 	Status        TransactionStatus `json:"status"`
 	Date          time.Time         `json:"date"`
 }
 
 // NewTransaction returns a Transaction structure with given values
-func NewTransaction(clientID, partnerID string, amount int) (*Transaction, error) {
+func NewTransaction(clientID, partnerID string, amount float64) (*Transaction, error) {
 	if clientID == "" {
 		return nil, ErrMissingClientID
 	}
@@ -61,7 +61,7 @@ func NewTransaction(clientID, partnerID string, amount int) (*Transaction, error
 		return nil, ErrMissingPartnerID
 	}
 
-	if amount < 0 {
+	if amount <= 0 {
 		return nil, ErrInvalidAmount
 	}
 
@@ -69,7 +69,7 @@ func NewTransaction(clientID, partnerID string, amount int) (*Transaction, error
 		ClientID:  clientID,
 		PartnerID: partnerID,
 		Amount:    amount,
-		Status:    TransactionStatusStarted,
+		Status:    TransactionStatusOnHold,
 		Date:      time.Now(),
 		TransactionID: random.GenerateID(TransactionIDPrefix,
 			random.StandardBitSize),

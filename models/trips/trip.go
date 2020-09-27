@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	events "kargo-back/models/events"
+	users "kargo-back/models/users"
 	"kargo-back/shared/random"
 	"time"
 )
@@ -77,8 +78,9 @@ func NewTrip(clientID, partnerID, truckID, transactionID string, tripPrice float
 		TripPrice:     tripPrice,
 		EventsHistory: []events.EventHistory{
 			events.EventHistory{
-				Event: events.EventTruckSelection,
-				Date:  time.Now(),
+				Event:    events.EventTruckSelection,
+				UserType: users.UserTypeClient,
+				Date:     time.Now(),
 			},
 		},
 		CreationDate: time.Now(),
@@ -96,8 +98,9 @@ func (trip *Trip) AddNaturalFlowPartnerEvent() error {
 	trip.NaturalFlowStep++
 
 	trip.EventsHistory = append(trip.EventsHistory, events.EventHistory{
-		Event: event,
-		Date:  time.Now(),
+		Event:    event,
+		UserType: users.UserTypePartner,
+		Date:     time.Now(),
 	})
 
 	trip.UpdateDate = time.Now()
@@ -119,8 +122,9 @@ func (trip *Trip) AddNaturalFlowClientEvent() error {
 	trip.NaturalFlowStep++
 
 	trip.EventsHistory = append(trip.EventsHistory, events.EventHistory{
-		Event: event,
-		Date:  time.Now(),
+		Event:    event,
+		UserType: users.UserTypeClient,
+		Date:     time.Now(),
 	})
 
 	trip.UpdateDate = time.Now()
@@ -137,9 +141,10 @@ func (trip *Trip) AddTripDenialEvent(message string) error {
 	}
 
 	trip.EventsHistory = append(trip.EventsHistory, events.EventHistory{
-		Event:   events.EventTripDenial,
-		Message: message,
-		Date:    time.Now(),
+		Event:    events.EventTripDenial,
+		Message:  message,
+		UserType: users.UserTypePartner,
+		Date:     time.Now(),
 	})
 
 	trip.Finished = true
@@ -150,16 +155,17 @@ func (trip *Trip) AddTripDenialEvent(message string) error {
 
 // AddTripCancellationEvent adds trip cancellation event
 // Can be triggered by partner and client
-func (trip *Trip) AddTripCancellationEvent(message string) error {
+func (trip *Trip) AddTripCancellationEvent(message string, userType users.UserType) error {
 	// Trip can just be cancelled if truck departure event has not happened
 	if trip.NaturalFlowStep > 1 {
 		return ErrEventNotAuthorized
 	}
 
 	trip.EventsHistory = append(trip.EventsHistory, events.EventHistory{
-		Event:   events.EventTripCancellation,
-		Message: message,
-		Date:    time.Now(),
+		Event:    events.EventTripCancellation,
+		Message:  message,
+		UserType: userType,
+		Date:     time.Now(),
 	})
 
 	trip.Finished = true
@@ -170,15 +176,16 @@ func (trip *Trip) AddTripCancellationEvent(message string) error {
 
 // AddReportEvent adds report event
 // Can be triggered by partner and client and message is mandatory
-func (trip *Trip) AddReportEvent(message string) error {
+func (trip *Trip) AddReportEvent(message string, userType users.UserType) error {
 	if message == "" {
 		return ErrMissingMessage
 	}
 
 	trip.EventsHistory = append(trip.EventsHistory, events.EventHistory{
-		Event:   events.EventReport,
-		Message: message,
-		Date:    time.Now(),
+		Event:    events.EventReport,
+		Message:  message,
+		UserType: userType,
+		Date:     time.Now(),
 	})
 
 	trip.UpdateDate = time.Now()

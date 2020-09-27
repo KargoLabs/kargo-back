@@ -22,9 +22,9 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	amount, err := strconv.Atoi(body.Get("amount"))
+	amount, err := strconv.ParseFloat(body.Get("amount"), 64)
 	if err != nil {
-		return apigateway.LogAndReturnError(err), nil
+		return apigateway.NewErrorResponse(400, models.ErrInvalidAmount), nil
 	}
 
 	partner, err := partnerStorage.LoadPartner(ctx, body.Get("partner_id"))
@@ -46,6 +46,9 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	}
 
 	transaction, err := models.NewTransaction(client.ClientID, partner.PartnerID, amount)
+	if err != nil {
+		return apigateway.NewErrorResponse(400, err), nil
+	}
 
 	err = storage.PutTransaction(ctx, transaction)
 	if err != nil {

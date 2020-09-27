@@ -2,6 +2,7 @@ package models
 
 import (
 	events "kargo-back/models/events"
+	users "kargo-back/models/users"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -48,6 +49,7 @@ func TestNewTrip(t *testing.T) {
 	c.Len(trip.EventsHistory, 1)
 	c.Equal(events.EventTruckSelection, trip.EventsHistory[0].Event)
 	c.Empty(trip.EventsHistory[0].Message)
+	c.Equal(users.UserTypeClient, trip.EventsHistory[0].UserType)
 	c.NotEmpty(trip.EventsHistory[0].Date)
 	c.NotEmpty(trip.UpdateDate)
 	c.NotEmpty(trip.CreationDate)
@@ -81,6 +83,7 @@ func TestTrip_AddNaturalFlowPartnerEvent(t *testing.T) {
 	c.Len(trip.EventsHistory, 2)
 	c.Equal(events.EventTripAcceptance, trip.EventsHistory[1].Event)
 	c.Empty(trip.EventsHistory[1].Message)
+	c.Equal(users.UserTypePartner, trip.EventsHistory[1].UserType)
 	c.NotEmpty(trip.EventsHistory[1].Date)
 	c.Equal(1, trip.NaturalFlowStep)
 }
@@ -113,6 +116,7 @@ func TestTrip_AddNaturalFlowClientEvent(t *testing.T) {
 	c.Len(trip.EventsHistory, 9)
 	c.Equal(events.EventReceiptConfirmation, trip.EventsHistory[8].Event)
 	c.Empty(trip.EventsHistory[8].Message)
+	c.Equal(users.UserTypeClient, trip.EventsHistory[8].UserType)
 	c.NotEmpty(trip.EventsHistory[8].Date)
 	c.Equal(8, trip.NaturalFlowStep)
 	c.True(trip.Finished)
@@ -144,6 +148,7 @@ func TestTrip_AddTripDenialEvent(t *testing.T) {
 	c.Len(trip.EventsHistory, 2)
 	c.Equal(events.EventTripDenial, trip.EventsHistory[1].Event)
 	c.Equal("sorry bro", trip.EventsHistory[1].Message)
+	c.Equal(users.UserTypePartner, trip.EventsHistory[1].UserType)
 	c.NotEmpty(trip.EventsHistory[1].Date)
 	c.Equal(0, trip.NaturalFlowStep)
 	c.True(trip.Finished)
@@ -161,7 +166,7 @@ func TestTrip_AddTripCancellationEventFail(t *testing.T) {
 		c.Nil(err)
 	}
 
-	err = trip.AddTripCancellationEvent("sorry bro")
+	err = trip.AddTripCancellationEvent("sorry bro", users.UserTypeClient)
 	c.Equal(ErrEventNotAuthorized, err)
 }
 
@@ -171,12 +176,13 @@ func TestTrip_AddTripCancellationEvent(t *testing.T) {
 	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234)
 	c.Nil(err)
 
-	err = trip.AddTripCancellationEvent("sorry bro")
+	err = trip.AddTripCancellationEvent("sorry bro", users.UserTypeClient)
 	c.Nil(err)
 
 	c.Len(trip.EventsHistory, 2)
 	c.Equal(events.EventTripCancellation, trip.EventsHistory[1].Event)
 	c.Equal("sorry bro", trip.EventsHistory[1].Message)
+	c.Equal(users.UserTypeClient, trip.EventsHistory[1].UserType)
 	c.NotEmpty(trip.EventsHistory[1].Date)
 	c.Equal(0, trip.NaturalFlowStep)
 	c.True(trip.Finished)
@@ -188,7 +194,7 @@ func TestTrip_AddReportEventFail(t *testing.T) {
 	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234)
 	c.Nil(err)
 
-	err = trip.AddReportEvent("")
+	err = trip.AddReportEvent("", users.UserTypeClient)
 	c.Equal(ErrMissingMessage, err)
 }
 
@@ -198,12 +204,13 @@ func TestTrip_AddReportEvent(t *testing.T) {
 	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234)
 	c.Nil(err)
 
-	err = trip.AddReportEvent("some minions attacked me")
+	err = trip.AddReportEvent("some minions attacked me", users.UserTypePartner)
 	c.Nil(err)
 
 	c.Len(trip.EventsHistory, 2)
 	c.Equal(events.EventReport, trip.EventsHistory[1].Event)
 	c.Equal("some minions attacked me", trip.EventsHistory[1].Message)
+	c.Equal(users.UserTypePartner, trip.EventsHistory[1].UserType)
 	c.NotEmpty(trip.EventsHistory[1].Date)
 	c.Equal(0, trip.NaturalFlowStep)
 	c.False(trip.Finished)

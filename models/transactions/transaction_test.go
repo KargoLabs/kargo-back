@@ -29,8 +29,8 @@ func TestNewTrancation(t *testing.T) {
 	c.Nil(err)
 	c.Equal("client01", transaction.ClientID)
 	c.Equal("partner01", transaction.PartnerID)
-	c.Equal(100, transaction.Amount)
-	c.Equal(TransactionStatusStarted, transaction.Status)
-	c.Len(transaction.TransactionID, 83)
+	c.Equal(float64(100), transaction.Amount)
+	c.Equal(TransactionStatusOnHold, transaction.Status)
+	c.NotEmpty(transaction.TransactionID)
 	c.NotEmpty(transaction.Date)
 }
