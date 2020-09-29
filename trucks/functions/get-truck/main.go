@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	// ErrMissingTruckID is when the partner_id query parameter is missing
+	// ErrMissingTruckID is when the truck_id query parameter is missing
 	ErrMissingTruckID = errors.New("missing truck_id query param")
 )
 

@@ -25,6 +25,7 @@ type TrucksQuery struct {
 	Volume      float64
 }
 
+// NewTrucksQuery is the struct for making dynamodb queries for trucks
 func NewTrucksQuery(truckType, weightString, volumeString string, origin, destination trips.Region) (*TrucksQuery, error) {
 	if !ValidTruckTypes[TruckType(truckType)] {
 		return nil, ErrInvalidTruckType
@@ -55,4 +56,11 @@ func NewTrucksQuery(truckType, weightString, volumeString string, origin, destin
 		Weight:      weight,
 		Volume:      volume,
 	}, nil
+}
+
+// PartnerTrucksQuery is the struct for making dynamodb queries for partner trucks
+type PartnerTrucksQuery struct {
+	PartnerID       string
+	FilterAvailable bool
+	Available       bool
 }
