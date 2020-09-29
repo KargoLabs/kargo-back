@@ -16,7 +16,7 @@ var (
 	// ErrMissingPartnerID error when partner_id is missing
 	ErrMissingPartnerID = errors.New("missing partner id parameter")
 	// ErrMissingRegistrationPlate error when registration plate is missing
-	ErrMissingRegistrationPlate = errors.New("missing registration id parameter")
+	ErrMissingRegistrationPlate = errors.New("missing registration plate parameter")
 	// ErrMissingBrand error when truck brand is missing
 	ErrMissingBrand = errors.New("missing brand parameter")
 	// ErrMissingModel error when truck_model is missing
