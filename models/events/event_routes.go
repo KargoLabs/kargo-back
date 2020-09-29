@@ -1,5 +1,6 @@
 package models
 
+// EventRoute is the enum for possible event routes
 type EventRoute string
 
 const (
@@ -7,7 +8,7 @@ const (
 	EventRouteNatural EventRoute = "natural"
 	// EventRouteDenial is denial trip route
 	EventRouteDenial EventRoute = "denial"
-	// EventRouteDenial is cancellation trip route
+	// EventRouteCancellation is cancellation trip route
 	EventRouteCancellation EventRoute = "cancellation"
 	// EventRouteReport is report in the trip route
 	EventRouteReport EventRoute = "report"
