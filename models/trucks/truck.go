@@ -43,6 +43,8 @@ var (
 	ErrInvalidMaxVolume = errors.New("invalid truck max volume")
 	// ErrInvalidMaxWeight error when an invalid truck max weight is given
 	ErrInvalidMaxWeight = errors.New("invalid truck max weight")
+	// ErrInvalidCompletedTrips error when an invalid truck completed_trips is given
+	ErrInvalidCompletedTrips = errors.New("invalid completed_trips")
 )
 
 // TruckType is the type handler for the different types of trucks

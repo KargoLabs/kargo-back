@@ -51,6 +51,14 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		truck.Year = year
 	}
 
+	if body.Get("completed_trips") != "" {
+		completedTrips, err := strconv.Atoi(body.Get("completed_trips"))
+		if err != nil {
+			return apigateway.NewErrorResponse(400, models.ErrInvalidCompletedTrips), nil
+		}
+		truck.CompletedTrips = completedTrips
+	}
+
 	if body.Get("max_volume") != "" {
 		maxVolume, err := strconv.ParseFloat(body.Get("max_volume"), 64)
 		if err != nil {
