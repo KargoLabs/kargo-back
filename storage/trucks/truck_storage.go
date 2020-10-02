@@ -48,6 +48,28 @@ func PutTruck(ctx context.Context, truck *models.Truck) error {
 	return err
 }
 
+// IncrementTruckCompletedTrips increases the truck completed_trips by one
+func IncrementTruckCompletedTrips(ctx context.Context, truckID string) error {
+	key := map[string]*dynamodb.AttributeValue{
+		"truck_id": {S: aws.String(truckID)},
+	}
+
+	params := &dynamodb.UpdateItemInput{
+		Key:       key,
+		TableName: aws.String(trucksTableName),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":qty": {
+				N: aws.String("1"),
+			},
+		},
+		UpdateExpression: aws.String("SET completed_trips =  completed_trips + :qty"),
+		ReturnValues:     aws.String("NONE"),
+	}
+
+	_, err := dynamoClient.UpdateItem(params)
+	return err
+}
+
 // LoadTruck loads a truck from DynamoDB
 func LoadTruck(ctx context.Context, truckID string) (*models.Truck, error) {
 	key := map[string]*dynamodb.AttributeValue{

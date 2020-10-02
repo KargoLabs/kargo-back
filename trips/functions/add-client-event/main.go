@@ -18,7 +18,8 @@ import (
 )
 
 var (
-	updateTransactionLambdaName = environment.GetString("UPDATE_TRANSACTION_LAMBDA_NAME", "transactions_update-transaction")
+	updateTransactionLambdaName            = environment.GetString("UPDATE_TRANSACTION_LAMBDA_NAME", "transactions_update-transaction")
+	incrementTruckCompletedTripsLambdaName = environment.GetString("INCREMENT_TRUCK_COMPLETED_TRIPS_LAMBDA_NAME", "truck_increment-completed-trips")
 
 	errMissingTripID       = errors.New("missing trip id in body parameter")
 	errInvalidEventRoute   = errors.New("invalid event route parameter")
@@ -69,6 +70,11 @@ func (clientEventReq *clientEventRequest) setNaturalFlowEvent(ctx context.Contex
 		return errResponse
 	}
 
+	errResponse = clientEventReq.incrementTruckCompletedTrips(ctx)
+	if errResponse != nil {
+		return errResponse
+	}
+
 	return nil
 }
 
@@ -82,6 +88,26 @@ func (clientEventReq *clientEventRequest) setCancellationEvent(ctx context.Conte
 	errResponse := clientEventReq.updateTransaction(ctx, transactionModels.TransactionStatusReversed)
 	if errResponse != nil {
 		return errResponse
+	}
+
+	return nil
+}
+
+func (clientEventReq *clientEventRequest) incrementTruckCompletedTrips(ctx context.Context) *events.APIGatewayProxyResponse {
+	params := url.Values{}
+
+	params.Set("truck_id", clientEventReq.Trip.TruckID)
+
+	lambdaResponse, err := lambdaLibrary.InvokeAPIGatewayWithURLEncodedParams(ctx, incrementTruckCompletedTripsLambdaName, params)
+	if err != nil {
+		return apigateway.LogAndReturnError(err)
+	}
+
+	if lambdaResponse.StatusCode != 200 {
+		// It is a 500 because supposedly all inputs were correct before triggering the transaction lambda
+		lambdaResponse.StatusCode = 500
+
+		return lambdaResponse
 	}
 
 	return nil
