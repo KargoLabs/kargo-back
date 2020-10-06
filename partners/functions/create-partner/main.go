@@ -14,7 +14,11 @@ import (
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	username, err := apigateway.GetUsername(request)
+	if err != nil {
+		return apigateway.LogAndReturnError(err), nil
+	}
 
+	email, err := apigateway.GetEmail(request)
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
 	}
@@ -29,7 +33,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.NewErrorResponse(400, err), nil
 	}
 
-	partner, err := models.NewPartner(username, body.Get("name"), body.Get("document"), birthdate)
+	partner, err := models.NewPartner(username, body.Get("name"), body.Get("document"), body.Get("phone_number"), email, birthdate)
 	if err != nil {
 		return apigateway.NewErrorResponse(400, err), nil
 	}
