@@ -44,7 +44,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	if ok {
 		finishedBool, err := strconv.ParseBool(finished)
 		if err != nil {
-			return apigateway.NewErrorResponse(403, ErrInvalidFinishedValue), nil
+			return apigateway.NewErrorResponse(400, ErrInvalidFinishedValue), nil
 		}
 		query.FilterFinished = true
 		query.Finished = finishedBool
