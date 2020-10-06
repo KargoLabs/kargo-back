@@ -26,12 +26,12 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	err = storage.IncrementTruckCompletedTrips(ctx, truck.TruckID)
+	truck, err = storage.IncrementTruckCompletedTrips(ctx, truck.TruckID)
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	return apigateway.NewJSONResponse(200, nil), nil
+	return apigateway.NewJSONResponse(200, truck), nil
 }
 
 func main() {
