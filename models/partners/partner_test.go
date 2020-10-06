@@ -10,18 +10,22 @@ import (
 func TestNewPartnerFail(t *testing.T) {
 	c := require.New(t)
 
-	birthdate, err := time.Parse("2010-04-04", "2000-05-02")
+	birthdate, err := time.Parse("2006-01-02", "2000-05-02")
 	c.Nil(err)
 
-	partner, err := NewPartner("dummyUser", "", "2222", birthdate)
+	partner, err := NewPartner("dummyUser", "", "2222", "+18291234567", "kike@kargo.com", birthdate)
 	c.Nil(partner)
-	c.Equal(ErrMissingBirthdate, err)
+	c.Equal(ErrMissingName, err)
 
-	partner, err = NewPartner("dummyUser", "roniel valdez", "", birthdate)
+	partner, err = NewPartner("dummyUser", "roniel valdez", "", "+18291234567", "kike@kargo.com", birthdate)
 	c.Nil(partner)
 	c.Equal(ErrMissingDocument, err)
 
-	partner, err = NewPartner("dummyUser", "roniel valdez", "12345", time.Time{})
+	partner, err = NewPartner("dummyUser", "roniel valdez", "12345", "", "kike@kargo.com", birthdate)
+	c.Nil(partner)
+	c.Equal(ErrMissingPhoneNumber, err)
+
+	partner, err = NewPartner("dummyUser", "roniel valdez", "12345", "+18291234567", "kike@kargo.com", time.Time{})
 	c.Nil(partner)
 	c.Equal(ErrMissingBirthdate, err)
 }
@@ -29,10 +33,10 @@ func TestNewPartnerFail(t *testing.T) {
 func TestNewPartner(t *testing.T) {
 	c := require.New(t)
 
-	birthdate, err := time.Parse("2010-01-02", "2000-05-02")
+	birthdate, err := time.Parse("2006-01-02", "2000-05-02")
 	c.Nil(err)
 
-	partner, err := NewPartner("dummyUser", "roniel, valdez", "12345", birthdate)
+	partner, err := NewPartner("dummyUser", "roniel valdez", "12345", "+18291234567", "kike@kargo.com", birthdate)
 	c.Nil(err)
 
 	c.NotEmpty(partner.PartnerID)
