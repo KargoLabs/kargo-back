@@ -57,10 +57,3 @@ func NewTrucksQuery(truckType, weightString, volumeString string, origin, destin
 		Volume:      volume,
 	}, nil
 }
-
-// PartnerTrucksQuery is the struct for making dynamodb queries for partner trucks
-type PartnerTrucksQuery struct {
-	PartnerID       string
-	FilterAvailable bool
-	Available       bool
-}
