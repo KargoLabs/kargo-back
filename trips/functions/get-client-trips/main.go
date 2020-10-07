@@ -9,7 +9,6 @@ import (
 	"kargo-back/shared/random"
 	clientStorage "kargo-back/storage/clients"
 	storage "kargo-back/storage/trips"
-	"strconv"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -36,21 +35,17 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	query := models.TripQuery{Value: client.ClientID}
-
 	params := request.QueryStringParameters
+
 	// Optional parameter, filter by wether a trip has finished or not
-	finished, ok := params["finished"]
-	if ok {
-		finishedBool, err := strconv.ParseBool(finished)
-		if err != nil {
-			return apigateway.NewErrorResponse(400, ErrInvalidFinishedValue), nil
-		}
-		query.FilterFinished = true
-		query.Finished = finishedBool
+	finished := params["finished"]
+
+	query, err := models.NewTripsQuery(client.ClientID, finished)
+	if err != nil {
+		return apigateway.NewErrorResponse(400, err), nil
 	}
 
-	trips, err := storage.QueryClientTrips(ctx, query)
+	trips, err := storage.QueryClientTrips(ctx, *query)
 
 	if errors.Is(err, storage.ErrTripNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
