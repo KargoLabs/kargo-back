@@ -6,6 +6,8 @@ import (
 	tripsModels "kargo-back/models/trips"
 	models "kargo-back/models/trucks"
 	"kargo-back/shared/apigateway"
+	"kargo-back/shared/environment"
+	"kargo-back/shared/s3"
 	storage "kargo-back/storage/trucks"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -17,6 +19,8 @@ var (
 	errMissingDestination = errors.New("missing destination parameter")
 	errMissingWeight      = errors.New("missing weight parameter")
 	errMissingVolume      = errors.New("missing volume parameter")
+
+	profilePhotosBucket = environment.GetString("PROFILE_PHOTOS_BUCKET", "kargo-profile-photos")
 )
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
@@ -69,15 +73,23 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	trucksWithTripPrice := []*models.TruckWithTripPrice{}
+	trucksWithTripPriceAndGetURL := []*s3.StructWithGetURL{}
 
 	for _, truck := range trucks {
+		getProfilePhotoURL, err := s3.GetGetPreSignedURL(ctx, profilePhotosBucket, truck.ProfilePhotoS3Path)
+		if err != nil {
+			return apigateway.LogAndReturnError(err), nil
+		}
+
 		truckWithTripPrice := models.NewTruckWithTripPrice(origin, destination, truck)
 
-		trucksWithTripPrice = append(trucksWithTripPrice, truckWithTripPrice)
+		trucksWithTripPriceAndGetURL = append(trucksWithTripPriceAndGetURL, &s3.StructWithGetURL{
+			Struct:             truckWithTripPrice,
+			GetProfilePhotoURL: getProfilePhotoURL,
+		})
 	}
 
-	return apigateway.NewJSONResponse(200, trucksWithTripPrice), nil
+	return apigateway.NewJSONResponse(200, trucksWithTripPriceAndGetURL), nil
 }
 
 func main() {

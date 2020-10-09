@@ -3,6 +3,7 @@ package phoneValidation
 import (
 	kargoClient "kargo-back/shared/client"
 	"kargo-back/shared/environment"
+	"kargo-back/shared/logger"
 	"net/http"
 	"net/url"
 )
@@ -45,6 +46,8 @@ func EnrollPhone(phoneNumber, truoraAccountID string) (*TruoraResponse, error) {
 		return nil, err
 	}
 
+	defer logger.CloseOrLog(response.Body)
+
 	if response.StatusCode != 200 {
 		truoraError, err := getTruoraErrorFromBody(response.Body)
 		if err != nil {
@@ -81,6 +84,8 @@ func CreatePhoneValidation(truoraAccountID string) (*TruoraResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	defer logger.CloseOrLog(response.Body)
 
 	if response.StatusCode != 200 {
 		truoraError, err := getTruoraErrorFromBody(response.Body)
@@ -120,6 +125,8 @@ func PerformPhoneValidation(code, validationID string) (*TruoraResponse, error) 
 	if err != nil {
 		return nil, err
 	}
+
+	defer logger.CloseOrLog(response.Body)
 
 	if response.StatusCode != 200 {
 		truoraError, err := getTruoraErrorFromBody(response.Body)

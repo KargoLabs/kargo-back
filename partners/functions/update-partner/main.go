@@ -5,8 +5,10 @@ import (
 	"errors"
 	models "kargo-back/models/partners"
 	"kargo-back/shared/apigateway"
+	"kargo-back/shared/environment"
 	"kargo-back/shared/normalize"
 	"kargo-back/shared/random"
+	"kargo-back/shared/s3"
 	storage "kargo-back/storage/partners"
 
 	"net/url"
@@ -17,7 +19,7 @@ import (
 )
 
 var (
-	errMissingPartnerID = errors.New("missing partner id in body parameter")
+	profilePhotosBucket = environment.GetString("PROFILE_PHOTOS_BUCKET", "kargo-profile-photos")
 )
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
@@ -58,6 +60,15 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		partner.Birthdate = birthdate
 	}
 
+	var uploadProfilePhotoURL string
+
+	if body.Get("profile_photo") != "" {
+		uploadProfilePhotoURL, err = s3.GetPutPreSignedURL(ctx, profilePhotosBucket, partner.ProfilePhotoS3Path)
+		if err != nil {
+			return apigateway.LogAndReturnError(err), nil
+		}
+	}
+
 	partner.UpdateDate = time.Now()
 
 	err = storage.PutPartner(ctx, partner)
@@ -65,7 +76,10 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	return apigateway.NewJSONResponse(200, partner), nil
+	return apigateway.NewJSONResponse(200, &s3.StructWithUploadURL{
+		Struct:                partner,
+		UploadProfilePhotoURL: uploadProfilePhotoURL,
+	}), nil
 }
 
 func main() {

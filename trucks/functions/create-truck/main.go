@@ -6,6 +6,8 @@ import (
 	trips "kargo-back/models/trips"
 	models "kargo-back/models/trucks"
 	"kargo-back/shared/apigateway"
+	"kargo-back/shared/environment"
+	"kargo-back/shared/s3"
 	partnerStorage "kargo-back/storage/partners"
 	storage "kargo-back/storage/trucks"
 	"net/url"
@@ -13,6 +15,10 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+)
+
+var (
+	profilePhotosBucket = environment.GetString("PROFILE_PHOTOS_BUCKET", "kargo-profile-photos")
 )
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
@@ -89,7 +95,15 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	return apigateway.NewJSONResponse(201, truck), nil
+	uploadProfilePhotoURL, err := s3.GetPutPreSignedURL(ctx, profilePhotosBucket, truck.ProfilePhotoS3Path)
+	if err != nil {
+		return apigateway.LogAndReturnError(err), nil
+	}
+
+	return apigateway.NewJSONResponse(201, &s3.StructWithUploadURL{
+		Struct:                truck,
+		UploadProfilePhotoURL: uploadProfilePhotoURL,
+	}), nil
 }
 
 func main() {

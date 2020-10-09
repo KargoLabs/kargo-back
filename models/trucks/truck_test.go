@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	models "kargo-back/models/trips"
 	"testing"
 
@@ -214,6 +215,7 @@ func TestNewTruck(t *testing.T) {
 	err := truck.ValidateTruck()
 	c.Nil(err)
 	c.True(truck.Available)
+	c.Equal(fmt.Sprintf("trucks/%s.png", truck.TruckID), truck.ProfilePhotoS3Path)
 	c.NotEmpty(truck.TruckID)
 	c.NotEmpty(truck.CreationDate)
 	c.NotEmpty(truck.UpdateDate)

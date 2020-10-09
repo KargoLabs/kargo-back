@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -44,6 +45,7 @@ func TestNewClient(t *testing.T) {
 	c.Equal("12345", client.Document)
 	c.Equal("+18291234567", client.PhoneNumber)
 	c.Equal("kike@kargo.com", client.Email)
+	c.Equal(fmt.Sprintf("clients/%s.png", client.ClientID), client.ProfilePhotoS3Path)
 	c.Equal(birthdate, client.Birthdate)
 	c.NotEmpty(client.CreationDate)
 }

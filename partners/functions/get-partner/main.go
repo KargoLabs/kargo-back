@@ -5,7 +5,9 @@ import (
 	"errors"
 	models "kargo-back/models/partners"
 	"kargo-back/shared/apigateway"
+	"kargo-back/shared/environment"
 	"kargo-back/shared/random"
+	"kargo-back/shared/s3"
 	storage "kargo-back/storage/partners"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -13,7 +15,7 @@ import (
 )
 
 var (
-	errMissingPartnerID = errors.New("missing partner id in query parameter")
+	profilePhotosBucket = environment.GetString("PROFILE_PHOTOS_BUCKET", "kargo-profile-photos")
 )
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
@@ -32,7 +34,15 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	return apigateway.NewJSONResponse(200, partner), nil
+	getProfilePhotoURL, err := s3.GetGetPreSignedURL(ctx, profilePhotosBucket, partner.ProfilePhotoS3Path)
+	if err != nil {
+		return apigateway.LogAndReturnError(err), nil
+	}
+
+	return apigateway.NewJSONResponse(200, &s3.StructWithGetURL{
+		Struct:             partner,
+		GetProfilePhotoURL: getProfilePhotoURL,
+	}), nil
 }
 
 func main() {

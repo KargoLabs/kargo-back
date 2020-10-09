@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"kargo-back/shared/normalize"
 	"kargo-back/shared/random"
 	"time"
@@ -25,14 +26,15 @@ var (
 
 // Client is the struct handler for client
 type Client struct {
-	ClientID     string    `json:"client_id"`
-	Name         string    `json:"name"`
-	Document     string    `json:"document"`
-	PhoneNumber  string    `json:"phone_number"`
-	Email        string    `json:"email"`
-	Birthdate    time.Time `json:"birthdate"`
-	CreationDate time.Time `json:"creation_date"`
-	UpdateDate   time.Time `json:"update_date"`
+	ClientID           string    `json:"client_id"`
+	Name               string    `json:"name"`
+	Document           string    `json:"document"`
+	PhoneNumber        string    `json:"phone_number"`
+	Email              string    `json:"email"`
+	ProfilePhotoS3Path string    `json:"profile_photo_s3_path"`
+	Birthdate          time.Time `json:"birthdate"`
+	CreationDate       time.Time `json:"creation_date"`
+	UpdateDate         time.Time `json:"update_date"`
 }
 
 // NewClient returns Client structure with given values
@@ -53,14 +55,17 @@ func NewClient(username, name, document, phoneNumber, email string, birthdate ti
 		return nil, ErrMissingBirthdate
 	}
 
+	clientID := random.GetSHA256WithPrefix(ClientIDPrefix, username)
+
 	return &Client{
-		ClientID:     random.GetSHA256WithPrefix(ClientIDPrefix, username),
-		Name:         normalize.NormalizeName(name),
-		Document:     document,
-		PhoneNumber:  phoneNumber,
-		Email:        email,
-		Birthdate:    birthdate,
-		CreationDate: time.Now(),
-		UpdateDate:   time.Now(),
+		ClientID:           clientID,
+		Name:               normalize.NormalizeName(name),
+		Document:           document,
+		PhoneNumber:        phoneNumber,
+		Email:              email,
+		ProfilePhotoS3Path: fmt.Sprintf("clients/%s.png", clientID),
+		Birthdate:          birthdate,
+		CreationDate:       time.Now(),
+		UpdateDate:         time.Now(),
 	}, nil
 }

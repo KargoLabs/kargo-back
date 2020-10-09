@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	trips "kargo-back/models/trips"
 	"kargo-back/shared/random"
 	"time"
@@ -79,22 +80,23 @@ var (
 
 // Truck is the struct handler for a truck
 type Truck struct {
-	TruckID           string         `json:"truck_id"`
-	PartnerID         string         `json:"partner_id"`
-	RegistrationPlate string         `json:"registration_id"`
-	Brand             string         `json:"brand"`
-	Model             string         `json:"model"`
-	Year              int            `json:"year"`
-	CompletedTrips    int            `json:"completed_trips"`
-	Available         bool           `json:"available"`
-	MaxVolume         float64        `json:"max_volume"`
-	MaxWeight         float64        `json:"max_weight"`
-	BasePrice         float64        `json:"base_price"`
-	PerRegionPrice    float64        `json:"per_region_price"`
-	Type              TruckType      `json:"truck_type"`
-	CreationDate      time.Time      `json:"creation_date"`
-	UpdateDate        time.Time      `json:"update_date"`
-	Regions           []trips.Region `json:"regions"`
+	TruckID            string         `json:"truck_id"`
+	PartnerID          string         `json:"partner_id"`
+	RegistrationPlate  string         `json:"registration_id"`
+	Brand              string         `json:"brand"`
+	Model              string         `json:"model"`
+	ProfilePhotoS3Path string         `json:"profile_photo_s3_path"`
+	Year               int            `json:"year"`
+	CompletedTrips     int            `json:"completed_trips"`
+	Available          bool           `json:"available"`
+	MaxVolume          float64        `json:"max_volume"`
+	MaxWeight          float64        `json:"max_weight"`
+	BasePrice          float64        `json:"base_price"`
+	PerRegionPrice     float64        `json:"per_region_price"`
+	Type               TruckType      `json:"truck_type"`
+	CreationDate       time.Time      `json:"creation_date"`
+	UpdateDate         time.Time      `json:"update_date"`
+	Regions            []trips.Region `json:"regions"`
 }
 
 // ValidateTruck returns a cleaned Truck structure with given values
@@ -156,6 +158,7 @@ func (truck *Truck) ValidateTruck() error {
 
 	truck.Available = true
 	truck.TruckID = random.GenerateID(TruckIDPrefix, random.StandardBitSize)
+	truck.ProfilePhotoS3Path = fmt.Sprintf("trucks/%s.png", truck.TruckID)
 	truck.CreationDate = time.Now()
 	truck.UpdateDate = time.Now()
 

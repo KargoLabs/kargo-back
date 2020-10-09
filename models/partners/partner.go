@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"kargo-back/shared/normalize"
 	"kargo-back/shared/random"
 	"time"
@@ -25,14 +26,15 @@ var (
 
 // Partner is the struct handler for partner
 type Partner struct {
-	PartnerID    string    `json:"partner_id"`
-	Name         string    `json:"name"`
-	Document     string    `json:"document"`
-	PhoneNumber  string    `json:"phone_number"`
-	Email        string    `json:"email"`
-	Birthdate    time.Time `json:"birthdate"`
-	CreationDate time.Time `json:"creation_date"`
-	UpdateDate   time.Time `json:"update_date"`
+	PartnerID          string    `json:"partner_id"`
+	Name               string    `json:"name"`
+	Document           string    `json:"document"`
+	PhoneNumber        string    `json:"phone_number"`
+	Email              string    `json:"email"`
+	ProfilePhotoS3Path string    `json:"profile_photo_s3_path"`
+	Birthdate          time.Time `json:"birthdate"`
+	CreationDate       time.Time `json:"creation_date"`
+	UpdateDate         time.Time `json:"update_date"`
 }
 
 // NewPartner returns Partner structure with given values
@@ -53,14 +55,17 @@ func NewPartner(username, name, document, phoneNumber, email string, birthdate t
 		return nil, ErrMissingBirthdate
 	}
 
+	partnerID := random.GetSHA256WithPrefix(PartnerIDPrefix, username)
+
 	return &Partner{
-		PartnerID:    random.GetSHA256WithPrefix(PartnerIDPrefix, username),
-		Name:         normalize.NormalizeName(name),
-		Document:     document,
-		PhoneNumber:  phoneNumber,
-		Email:        email,
-		Birthdate:    birthdate,
-		CreationDate: time.Now(),
-		UpdateDate:   time.Now(),
+		PartnerID:          partnerID,
+		Name:               normalize.NormalizeName(name),
+		Document:           document,
+		PhoneNumber:        phoneNumber,
+		Email:              email,
+		ProfilePhotoS3Path: fmt.Sprintf("partners/%s.png", partnerID),
+		Birthdate:          birthdate,
+		CreationDate:       time.Now(),
+		UpdateDate:         time.Now(),
 	}, nil
 }

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -42,6 +43,9 @@ func TestNewPartner(t *testing.T) {
 	c.NotEmpty(partner.PartnerID)
 	c.Equal("RONIEL VALDEZ", partner.Name)
 	c.Equal("12345", partner.Document)
+	c.Equal("+18291234567", partner.PhoneNumber)
+	c.Equal("kike@kargo.com", partner.Email)
+	c.Equal(fmt.Sprintf("partners/%s.png", partner.PartnerID), partner.ProfilePhotoS3Path)
 	c.Equal(birthdate, partner.Birthdate)
 	c.NotEmpty(partner.CreationDate)
 }
