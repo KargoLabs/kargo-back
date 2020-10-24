@@ -28,6 +28,8 @@ var (
 	ErrInvalidTripPrice = errors.New("invalid trip price parameter")
 	// ErrEventNotAuthorized error when user is not authorized for event
 	ErrEventNotAuthorized = errors.New("user is not authorized for event")
+	// ErrInvalidStartTime error when an invalid start time is given
+	ErrInvalidStartTime = errors.New("invalid start time parameter")
 )
 
 // Trip is the struct handler for a trip
@@ -43,10 +45,11 @@ type Trip struct {
 	EventsHistory   []events.EventHistory `json:"events_history"`
 	CreationDate    time.Time             `json:"creation_date"`
 	UpdateDate      time.Time             `json:"update_date"`
+	StartTime       time.Time             `json:"start_time"`
 }
 
 // NewTrip returns truck struct with given input
-func NewTrip(clientID, partnerID, truckID, transactionID string, tripPrice float64) (*Trip, error) {
+func NewTrip(clientID, partnerID, truckID, transactionID string, tripPrice float64, startTime time.Time) (*Trip, error) {
 	if clientID == "" {
 		return nil, ErrMissingClientID
 	}
@@ -83,6 +86,7 @@ func NewTrip(clientID, partnerID, truckID, transactionID string, tripPrice float
 				Date:     time.Now(),
 			},
 		},
+		StartTime:    startTime,
 		CreationDate: time.Now(),
 		UpdateDate:   time.Now(),
 	}, nil

@@ -16,6 +16,7 @@ import (
 	truckStorage "kargo-back/storage/trucks"
 	"net/url"
 	"strconv"
+	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -131,6 +132,15 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.NewErrorResponse(400, models.ErrInvalidTripPrice), nil
 	}
 
+	startTimeString := body.Get("start_time")
+	startTimeInt, err := strconv.ParseInt(startTimeString, 10, 64)
+
+	if startTimeString == "" || startTimeInt < 0 || err != nil {
+		return apigateway.NewErrorResponse(400, models.ErrInvalidStartTime), nil
+	}
+
+	startTime := time.Unix(startTimeInt, 0)
+
 	errResponse = tripReq.setTruckIDAndPartnerID(ctx)
 	if errResponse != nil {
 		return errResponse, nil
@@ -141,7 +151,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return errResponse, nil
 	}
 
-	trip, err := models.NewTrip(tripReq.clientID, tripReq.partnerID, tripReq.truckID, tripReq.transactionID, tripPrice)
+	trip, err := models.NewTrip(tripReq.clientID, tripReq.partnerID, tripReq.truckID, tripReq.transactionID, tripPrice, startTime)
 	if err != nil {
 		return apigateway.NewErrorResponse(400, err), nil
 	}

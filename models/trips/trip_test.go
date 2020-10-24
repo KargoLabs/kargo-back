@@ -4,30 +4,32 @@ import (
 	events "kargo-back/models/events"
 	users "kargo-back/models/users"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestNewTripFail(t *testing.T) {
 	c := require.New(t)
+	startTime := time.Now()
 
-	trip, err := NewTrip("", "PAR123", "TRU123", "PAY123", 1234)
+	trip, err := NewTrip("", "PAR123", "TRU123", "PAY123", 1234, startTime)
 	c.Equal(ErrMissingClientID, err)
 	c.Empty(trip)
 
-	trip, err = NewTrip("CLI123", "", "TRU123", "PAY123", 1234)
+	trip, err = NewTrip("CLI123", "", "TRU123", "PAY123", 1234, startTime)
 	c.Equal(ErrMissingPartnerID, err)
 	c.Empty(trip)
 
-	trip, err = NewTrip("CLI123", "PAR123", "", "PAY123", 1234)
+	trip, err = NewTrip("CLI123", "PAR123", "", "PAY123", 1234, startTime)
 	c.Equal(ErrMissingTruckID, err)
 	c.Empty(trip)
 
-	trip, err = NewTrip("CLI123", "PAR123", "TRU123", "", 1234)
+	trip, err = NewTrip("CLI123", "PAR123", "TRU123", "", 1234, startTime)
 	c.Equal(ErrMissingTransactionID, err)
 	c.Empty(trip)
 
-	trip, err = NewTrip("CLI123", "PAR123", "TRU123", "PAY123", -1)
+	trip, err = NewTrip("CLI123", "PAR123", "TRU123", "PAY123", -1, startTime)
 	c.Equal(ErrInvalidTripPrice, err)
 	c.Empty(trip)
 }
@@ -35,7 +37,9 @@ func TestNewTripFail(t *testing.T) {
 func TestNewTrip(t *testing.T) {
 	c := require.New(t)
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234)
+	startTime := time.Now()
+
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
 	c.Nil(err)
 
 	c.NotEmpty(trip.TripID)
@@ -53,12 +57,14 @@ func TestNewTrip(t *testing.T) {
 	c.NotEmpty(trip.EventsHistory[0].Date)
 	c.NotEmpty(trip.UpdateDate)
 	c.NotEmpty(trip.CreationDate)
+	c.Equal(trip.StartTime, startTime)
 }
 
 func TestTrip_AddNaturalFlowPartnerEventFail(t *testing.T) {
 	c := require.New(t)
+	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
 	c.Nil(err)
 
 	// This is necessary to arrive to an event that cannot be triggered by partner
@@ -73,8 +79,9 @@ func TestTrip_AddNaturalFlowPartnerEventFail(t *testing.T) {
 
 func TestTrip_AddNaturalFlowPartnerEvent(t *testing.T) {
 	c := require.New(t)
+	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
 	c.Nil(err)
 
 	err = trip.AddNaturalFlowPartnerEvent()
@@ -90,8 +97,9 @@ func TestTrip_AddNaturalFlowPartnerEvent(t *testing.T) {
 
 func TestTrip_AddNaturalFlowClientEventFail(t *testing.T) {
 	c := require.New(t)
+	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
 	c.Nil(err)
 
 	err = trip.AddNaturalFlowClientEvent()
@@ -100,8 +108,9 @@ func TestTrip_AddNaturalFlowClientEventFail(t *testing.T) {
 
 func TestTrip_AddNaturalFlowClientEvent(t *testing.T) {
 	c := require.New(t)
+	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
 	c.Nil(err)
 
 	// This is necessary to arrive to an event that can be triggered by client
@@ -124,8 +133,9 @@ func TestTrip_AddNaturalFlowClientEvent(t *testing.T) {
 
 func TestTrip_AddTripDenialEventFail(t *testing.T) {
 	c := require.New(t)
+	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
 	c.Nil(err)
 
 	// This is necessary so the denial event cannot be triggered
@@ -138,8 +148,9 @@ func TestTrip_AddTripDenialEventFail(t *testing.T) {
 
 func TestTrip_AddTripDenialEvent(t *testing.T) {
 	c := require.New(t)
+	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
 	c.Nil(err)
 
 	err = trip.AddTripDenialEvent("sorry bro")
@@ -156,8 +167,9 @@ func TestTrip_AddTripDenialEvent(t *testing.T) {
 
 func TestTrip_AddTripCancellationEventFail(t *testing.T) {
 	c := require.New(t)
+	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
 	c.Nil(err)
 
 	// This is necessary so the cancellation event cannot be triggered
@@ -172,8 +184,9 @@ func TestTrip_AddTripCancellationEventFail(t *testing.T) {
 
 func TestTrip_AddTripCancellationEvent(t *testing.T) {
 	c := require.New(t)
+	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
 	c.Nil(err)
 
 	err = trip.AddTripCancellationEvent("sorry bro", users.UserTypeClient)
@@ -190,8 +203,9 @@ func TestTrip_AddTripCancellationEvent(t *testing.T) {
 
 func TestTrip_AddReportEventFail(t *testing.T) {
 	c := require.New(t)
+	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
 	c.Nil(err)
 
 	err = trip.AddReportEvent("", users.UserTypeClient)
@@ -200,8 +214,9 @@ func TestTrip_AddReportEventFail(t *testing.T) {
 
 func TestTrip_AddReportEvent(t *testing.T) {
 	c := require.New(t)
+	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
 	c.Nil(err)
 
 	err = trip.AddReportEvent("some minions attacked me", users.UserTypePartner)
