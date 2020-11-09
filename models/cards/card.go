@@ -23,8 +23,8 @@ var (
 	ErrMissingUserID = errors.New("missing user id parameter")
 	// ErrMissingUserType error when user type is missing
 	ErrMissingUserType = errors.New("missing user type parameter")
-	// ErrMissingNumber error when the numbers param is mssing
-	ErrMissingNumber = errors.New("missing numbers parameter")
+	// ErrMissingNumber error when the number param is mssing
+	ErrMissingNumber = errors.New("missing number parameter")
 	// ErrMissingCSV error when the csv param is mssing
 	ErrMissingCSV = errors.New("missing csv parameter")
 	// ErrMissingMonth error when the month  is mssing
