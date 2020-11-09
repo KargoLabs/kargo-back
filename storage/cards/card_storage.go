@@ -17,7 +17,9 @@ import (
 
 var (
 	// ErrCardNotFound when no card was found
-	ErrCardNotFound     = errors.New("card not found")
+	ErrCardNotFound      = errors.New("card not found")
+	errCardNotBelongUser = errors.New("card does not belong to user")
+
 	cardsTableName      = environment.GetString("CARDS_TABLE_NAME", "cards")
 	cardsUserIDndexName = environment.GetString("CARD_USER_ID_INDEX_NAME", "card_user-id-index")
 	dynamoClient        dynamodbiface.DynamoDBAPI
@@ -82,4 +84,58 @@ func LoadUserCards(ctx context.Context, userID string) ([]*models.Card, error) {
 	}
 
 	return cards, nil
+}
+
+// DeleteCard loads a card and check if belong to the requesting user to then delete it
+func DeleteCard(ctx context.Context, userID, cardID string) error {
+	card, err := LoadCard(ctx, cardID)
+	if err != nil {
+		return err
+	}
+	if card.UserID != userID {
+		return errCardNotBelongUser
+	}
+
+	input := &dynamodb.DeleteItemInput{
+		Key: map[string]*dynamodb.AttributeValue{
+			"card_id": {
+				S: aws.String(cardID),
+			},
+		},
+		TableName: aws.String(cardsTableName),
+	}
+
+	_, err = dynamoClient.DeleteItem(input)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// LoadCard loads a single card
+func LoadCard(ctx context.Context, cardID string) (*models.Card, error) {
+	key := map[string]*dynamodb.AttributeValue{
+		"card_id": {S: aws.String(cardID)},
+	}
+
+	params := &dynamodb.GetItemInput{
+		Key:            key,
+		TableName:      aws.String(cardsTableName),
+		ConsistentRead: aws.Bool(true),
+	}
+
+	response, err := dynamoClient.GetItemWithContext(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(response.Item) == 0 {
+		return nil, ErrCardNotFound
+	}
+
+	var card models.Card
+	err = dynamodbattribute.UnmarshalMap(response.Item, &card)
+
+	return &card, err
 }
