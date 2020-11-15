@@ -22,7 +22,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	return apigateway.NewJSONResponse(201, cards), nil
+	return apigateway.NewJSONResponse(200, cards), nil
 }
 
 func main() {

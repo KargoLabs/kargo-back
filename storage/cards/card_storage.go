@@ -87,13 +87,13 @@ func LoadUserCards(ctx context.Context, userID string) ([]*models.Card, error) {
 }
 
 // DeleteCard loads a card and check if belong to the requesting user to then delete it
-func DeleteCard(ctx context.Context, userID, cardID string) error {
+func DeleteCard(ctx context.Context, userID, cardID string) (*models.Card, error) {
 	card, err := LoadCard(ctx, cardID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if card.UserID != userID {
-		return errCardNotBelongUser
+		return nil, errCardNotBelongUser
 	}
 
 	input := &dynamodb.DeleteItemInput{
@@ -107,10 +107,10 @@ func DeleteCard(ctx context.Context, userID, cardID string) error {
 
 	_, err = dynamoClient.DeleteItem(input)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return card, nil
 }
 
 // LoadCard loads a single card
