@@ -25,6 +25,8 @@ var (
 	ErrMissingUserType = errors.New("missing user type parameter")
 	// ErrMissingNumber error when the number param is mssing
 	ErrMissingNumber = errors.New("missing number parameter")
+	// ErrMissingName error when the card holder name is missing
+	ErrMissingName = errors.New("missing name parameter")
 	// ErrMissingCSV error when the csv param is mssing
 	ErrMissingCSV = errors.New("missing csv parameter")
 	// ErrMissingMonth error when the month  is mssing
@@ -41,16 +43,21 @@ var (
 type Card struct {
 	CardID         string `json:"card_id"`
 	UserID         string `json:"user_id"`
+	Name           string `json:"name"`
 	LastFourDigits string `json:"last_four_digits"`
 	Company        string `json:"company"`
 }
 
 // NewCard validates and returns a Card structure with given values
-func NewCard(userID, number, csv, year, month string) (*Card, error) {
+func NewCard(userID, number, name, csv, year, month string) (*Card, error) {
 	currYear, currMonth, _ := time.Now().Date()
 
 	if userID == "" {
 		return nil, ErrMissingUserID
+	}
+
+	if name == "" {
+		return nil, ErrMissingName
 	}
 
 	if number == "" {
@@ -98,6 +105,7 @@ func NewCard(userID, number, csv, year, month string) (*Card, error) {
 	return &Card{
 		CardID:         random.GenerateID(CardIDPrefix, random.StandardBitSize),
 		UserID:         userID,
+		Name:           name,
 		LastFourDigits: lastFour,
 		Company:        card.Company.Long,
 	}, nil

@@ -24,7 +24,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	card, err := models.NewCard(random.GetSHA256WithPrefix(clientModel.ClientIDPrefix, username), body.Get("number"), body.Get("csv"), body.Get("year"), body.Get("month"))
+	card, err := models.NewCard(random.GetSHA256WithPrefix(clientModel.ClientIDPrefix, username), body.Get("number"), body.Get("name"), body.Get("csv"), body.Get("year"), body.Get("month"))
 	if err != nil {
 		return apigateway.NewErrorResponse(400, err), nil
 	}
