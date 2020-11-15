@@ -19,6 +19,8 @@ const (
 )
 
 var (
+	// ErrMissingCardID error when card_id is missing
+	ErrMissingCardID = errors.New("missing card_id parameter")
 	// ErrMissingUserID error when user id is missing
 	ErrMissingUserID = errors.New("missing user id parameter")
 	// ErrMissingUserType error when user type is missing

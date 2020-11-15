@@ -18,6 +18,8 @@ var (
 	ErrMissingPartnerID = errors.New("missing partner id parameter")
 	// ErrInvalidAmount error when an invalid amount is given
 	ErrInvalidAmount = errors.New("invalid amount parameter")
+	// ErrMissingCardID error when  the card_id is missing
+	ErrMissingCardID = errors.New("missing card id parameter")
 )
 
 // TransactionStatus is the type handler for payment TransactionStatus.
@@ -46,15 +48,20 @@ type Transaction struct {
 	TransactionID string            `json:"transaction_id"`
 	PartnerID     string            `json:"partner_id"`
 	ClientID      string            `json:"client_id"`
+	CardID        string            `json:"card_id"`
 	Amount        float64           `json:"amount"`
 	Status        TransactionStatus `json:"status"`
 	Date          time.Time         `json:"date"`
 }
 
 // NewTransaction returns a Transaction structure with given values
-func NewTransaction(clientID, partnerID string, amount float64) (*Transaction, error) {
+func NewTransaction(clientID, partnerID, cardID string, amount float64) (*Transaction, error) {
 	if clientID == "" {
 		return nil, ErrMissingClientID
+	}
+
+	if cardID == "" {
+		return nil, ErrMissingCardID
 	}
 
 	if partnerID == "" {
@@ -68,6 +75,7 @@ func NewTransaction(clientID, partnerID string, amount float64) (*Transaction, e
 	return &Transaction{
 		ClientID:  clientID,
 		PartnerID: partnerID,
+		CardID:    cardID,
 		Amount:    amount,
 		Status:    TransactionStatusOnHold,
 		Date:      time.Now(),

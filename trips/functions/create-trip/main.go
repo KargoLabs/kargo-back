@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	cardModels "kargo-back/models/cards"
 	clientModels "kargo-back/models/clients"
 	transactionModels "kargo-back/models/transactions"
 	models "kargo-back/models/trips"
@@ -11,6 +12,7 @@ import (
 	"kargo-back/shared/environment"
 	lambdaLibrary "kargo-back/shared/lambda"
 	"kargo-back/shared/random"
+	cardStorage "kargo-back/storage/cards"
 	clientStorage "kargo-back/storage/clients"
 	storage "kargo-back/storage/trips"
 	truckStorage "kargo-back/storage/trucks"
@@ -32,6 +34,7 @@ type tripRequest struct {
 	clientID        string
 	partnerID       string
 	truckID         string
+	cardID          string
 	transactionID   string
 	tripPriceString string
 }
@@ -77,12 +80,33 @@ func (tripReq *tripRequest) setTruckIDAndPartnerID(ctx context.Context) *events.
 	return nil
 }
 
+func (tripReq *tripRequest) setCardID(ctx context.Context) *events.APIGatewayProxyResponse {
+	cardID := tripReq.body.Get("card_id")
+	if cardID == "" {
+		return apigateway.NewErrorResponse(400, cardModels.ErrMissingCardID)
+	}
+
+	card, err := cardStorage.LoadCard(ctx, cardID)
+	if errors.Is(err, cardStorage.ErrCardNotFound) {
+		return apigateway.NewErrorResponse(404, err)
+	}
+
+	if err != nil {
+		return apigateway.LogAndReturnError(err)
+	}
+
+	tripReq.cardID = card.CardID
+
+	return nil
+}
+
 func (tripReq *tripRequest) createTransaction(ctx context.Context) *events.APIGatewayProxyResponse {
 	params := url.Values{}
 
 	params.Set("client_id", tripReq.clientID)
 	params.Set("partner_id", tripReq.partnerID)
 	params.Set("amount", tripReq.tripPriceString)
+	params.Set("card_id", tripReq.cardID)
 
 	lambdaResponse, err := lambdaLibrary.InvokeAPIGatewayWithURLEncodedParams(ctx, createTransactionLambdaName, params)
 	if err != nil {
@@ -142,6 +166,11 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	startTime := time.Unix(startTimeInt, 0)
 
 	errResponse = tripReq.setTruckIDAndPartnerID(ctx)
+	if errResponse != nil {
+		return errResponse, nil
+	}
+
+	errResponse = tripReq.setCardID(ctx)
 	if errResponse != nil {
 		return errResponse, nil
 	}

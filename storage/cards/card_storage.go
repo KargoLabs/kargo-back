@@ -17,8 +17,9 @@ import (
 
 var (
 	// ErrCardNotFound when no card was found
-	ErrCardNotFound      = errors.New("card not found")
-	errCardNotBelongUser = errors.New("card does not belong to user")
+	ErrCardNotFound = errors.New("card not found")
+	// ErrCardNotBelongUser when the card does not belong to the requesting user
+	ErrCardNotBelongUser = errors.New("card does not belong to user")
 
 	cardsTableName      = environment.GetString("CARDS_TABLE_NAME", "cards")
 	cardsUserIDndexName = environment.GetString("CARD_USER_ID_INDEX_NAME", "card_user-id-index")
@@ -93,7 +94,7 @@ func DeleteCard(ctx context.Context, userID, cardID string) (*models.Card, error
 		return nil, err
 	}
 	if card.UserID != userID {
-		return nil, errCardNotBelongUser
+		return nil, ErrCardNotBelongUser
 	}
 
 	input := &dynamodb.DeleteItemInput{

@@ -9,15 +9,19 @@ import (
 func TestNewTransactionFail(t *testing.T) {
 	c := require.New(t)
 
-	transaction, err := NewTransaction("", "partner01", 100)
+	transaction, err := NewTransaction("", "partner01", "CARD123", 100)
 	c.Nil(transaction)
 	c.Equal(ErrMissingClientID, err)
 
-	transaction, err = NewTransaction("client01", "", 100)
+	transaction, err = NewTransaction("client01", "", "CARD123", 100)
 	c.Nil(transaction)
 	c.Equal(ErrMissingPartnerID, err)
 
-	transaction, err = NewTransaction("client01", "partner01", -100)
+	transaction, err = NewTransaction("client01", "partner01", "", 100)
+	c.Nil(transaction)
+	c.Equal(ErrMissingCardID, err)
+
+	transaction, err = NewTransaction("client01", "partner01", "CARD123", -100)
 	c.Nil(transaction)
 	c.Equal(ErrInvalidAmount, err)
 }
@@ -25,7 +29,7 @@ func TestNewTransactionFail(t *testing.T) {
 func TestNewTrancation(t *testing.T) {
 	c := require.New(t)
 
-	transaction, err := NewTransaction("client01", "partner01", 100)
+	transaction, err := NewTransaction("client01", "partner01", "CARD123", 100)
 	c.Nil(err)
 	c.Equal("client01", transaction.ClientID)
 	c.Equal("partner01", transaction.PartnerID)

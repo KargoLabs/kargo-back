@@ -5,6 +5,7 @@ import (
 	"errors"
 	models "kargo-back/models/transactions"
 	"kargo-back/shared/apigateway"
+	cardStorage "kargo-back/storage/cards"
 	clientStorage "kargo-back/storage/clients"
 	partnerStorage "kargo-back/storage/partners"
 	storage "kargo-back/storage/transactions"
@@ -41,11 +42,24 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.NewErrorResponse(404, err), nil
 	}
 
+	card, err := cardStorage.LoadCard(ctx, body.Get("card_id"))
+	if errors.Is(err, cardStorage.ErrCardNotFound) {
+		return apigateway.NewErrorResponse(404, cardStorage.ErrCardNotFound), nil
+	}
+
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	transaction, err := models.NewTransaction(client.ClientID, partner.PartnerID, amount)
+	if client.ClientID != card.UserID {
+		return apigateway.NewErrorResponse(400, cardStorage.ErrCardNotBelongUser), nil
+	}
+
+	if err != nil {
+		return apigateway.LogAndReturnError(err), nil
+	}
+
+	transaction, err := models.NewTransaction(client.ClientID, partner.PartnerID, card.CardID, amount)
 	if err != nil {
 		return apigateway.NewErrorResponse(400, err), nil
 	}
