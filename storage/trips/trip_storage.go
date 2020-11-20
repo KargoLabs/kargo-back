@@ -23,8 +23,11 @@ var (
 	tripClienIDFieldName   = environment.GetString("TRIP_CLIENT_ID_FIELD_NAME", "client_id")
 	tripClientIDIndexName  = environment.GetString("TRIP_CLIENT_ID_INDEX_NAME", "trip-client-id-index")
 	tripPartnerIDFieldName = environment.GetString("TRIP_PARTNER_ID_FIELD_NAME", "partner_id")
-	tripPartnerIDIndexName = environment.GetString("TRIP_CLIENT_ID_INDEX_NAME", "trip-partner-id-index")
-	dynamoClient           dynamodbiface.DynamoDBAPI
+	tripPartnerIDIndexName = environment.GetString("TRIP_PARTNER_ID_INDEX_NAME", "trip-partner-id-index")
+	tripTruckIDFieldName   = environment.GetString("TRIP_TRUCK_ID_FIELD_NAME", "truck_id")
+	tripTruckIDIndexName   = environment.GetString("TRIP_TRUCK_ID_INDEX_NAME", "trip-truck-id-index")
+
+	dynamoClient dynamodbiface.DynamoDBAPI
 )
 
 func init() {
@@ -77,7 +80,7 @@ func LoadTrip(ctx context.Context, tripID string) (*models.Trip, error) {
 }
 
 // QueryTrips queries trips from dynamodb based on the given indexed field
-func queryTrips(ctx context.Context, query models.TripsQuery, fieldName, indexName string) ([]*models.Trip, error) {
+func queryTrips(ctx context.Context, query *models.TripsQuery, fieldName, indexName string) ([]*models.Trip, error) {
 	keyCondition := expression.KeyEqual(expression.Key(fieldName), expression.Value(query.Value))
 	dynamoExpression := expression.NewBuilder().WithKeyCondition(keyCondition)
 
@@ -120,7 +123,7 @@ func queryTrips(ctx context.Context, query models.TripsQuery, fieldName, indexNa
 }
 
 // QueryClientTrips retrieves all the trips that belongs to a client, optionally filtering by finished
-func QueryClientTrips(ctx context.Context, clientQuery models.TripsQuery) ([]*models.Trip, error) {
+func QueryClientTrips(ctx context.Context, clientQuery *models.TripsQuery) ([]*models.Trip, error) {
 	trips, err := queryTrips(ctx, clientQuery, tripClienIDFieldName, tripClientIDIndexName)
 	if err != nil {
 		return nil, err
@@ -130,8 +133,18 @@ func QueryClientTrips(ctx context.Context, clientQuery models.TripsQuery) ([]*mo
 }
 
 // QueryPartnerTrips retrieves all the trips that belongs to a partner, optionally filtering by finished
-func QueryPartnerTrips(ctx context.Context, partnerQuery models.TripsQuery) ([]*models.Trip, error) {
+func QueryPartnerTrips(ctx context.Context, partnerQuery *models.TripsQuery) ([]*models.Trip, error) {
 	trips, err := queryTrips(ctx, partnerQuery, tripPartnerIDFieldName, tripPartnerIDIndexName)
+	if err != nil {
+		return nil, err
+	}
+
+	return trips, nil
+}
+
+// QueryTruckTrips retrieves all the trips that belongs to a trip, optionally filtering by finished
+func QueryTruckTrips(ctx context.Context, truckQuery *models.TripsQuery) ([]*models.Trip, error) {
+	trips, err := queryTrips(ctx, truckQuery, tripTruckIDFieldName, tripTruckIDIndexName)
 	if err != nil {
 		return nil, err
 	}

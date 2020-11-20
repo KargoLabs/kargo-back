@@ -26,7 +26,6 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 	}
 
 	partner, err := partnerStorage.LoadPartner(ctx, random.GetSHA256WithPrefix(partnerModels.PartnerIDPrefix, username))
-
 	if errors.Is(err, partnerStorage.ErrPartnerNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
 	}
@@ -45,11 +44,11 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.NewErrorResponse(400, err), nil
 	}
 
-	trips, err := storage.QueryPartnerTrips(ctx, *query)
-
+	trips, err := storage.QueryPartnerTrips(ctx, query)
 	if errors.Is(err, storage.ErrTripNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
 	}
+
 	if err != nil {
 		return apigateway.LogAndReturnError(err), nil
 	}

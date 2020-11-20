@@ -3,12 +3,10 @@ package main
 import (
 	"context"
 	"errors"
-	clientModels "kargo-back/models/clients"
 	models "kargo-back/models/trips"
 	"kargo-back/shared/apigateway"
-	"kargo-back/shared/random"
-	clientStorage "kargo-back/storage/clients"
 	storage "kargo-back/storage/trips"
+	truckStorage "kargo-back/storage/trucks"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -20,13 +18,15 @@ var (
 )
 
 func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	username, err := apigateway.GetUsername(request)
-	if err != nil {
-		return apigateway.LogAndReturnError(err), nil
+	params := request.QueryStringParameters
+
+	truckID, ok := request.QueryStringParameters["truck_id"]
+	if !ok || truckID == "" {
+		return apigateway.NewErrorResponse(400, models.ErrMissingTruckID), nil
 	}
 
-	client, err := clientStorage.LoadClient(ctx, random.GetSHA256WithPrefix(clientModels.ClientIDPrefix, username))
-	if errors.Is(err, clientStorage.ErrClientNotFound) {
+	truck, err := truckStorage.LoadTruck(ctx, truckID)
+	if errors.Is(err, truckStorage.ErrTruckNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
 	}
 
@@ -34,17 +34,15 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return apigateway.LogAndReturnError(err), nil
 	}
 
-	params := request.QueryStringParameters
-
 	// Optional parameter, filter by wether a trip has finished or not
 	finished := params["finished"]
 
-	query, err := models.NewTripsQuery(client.ClientID, finished)
+	query, err := models.NewTripsQuery(truck.TruckID, finished)
 	if err != nil {
 		return apigateway.NewErrorResponse(400, err), nil
 	}
 
-	trips, err := storage.QueryClientTrips(ctx, query)
+	trips, err := storage.QueryTruckTrips(ctx, query)
 	if errors.Is(err, storage.ErrTripNotFound) {
 		return apigateway.NewErrorResponse(404, err), nil
 	}
