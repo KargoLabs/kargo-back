@@ -91,8 +91,8 @@ func DeleteAccount(ctx context.Context, partnerID string) (*models.Account, erro
 
 	input := &dynamodb.DeleteItemInput{
 		Key: map[string]*dynamodb.AttributeValue{
-			"partner_id": {
-				S: aws.String(partnerID),
+			"account_id": {
+				S: aws.String(account.AccountID),
 			},
 		},
 		TableName: aws.String(accountsTableName),
