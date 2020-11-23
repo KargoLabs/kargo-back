@@ -13,23 +13,39 @@ func TestNewTripFail(t *testing.T) {
 	c := require.New(t)
 	startTime := time.Now()
 
-	trip, err := NewTrip("", "PAR123", "TRU123", "PAY123", 1234, startTime)
+	trip, err := NewTrip("", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
 	c.Equal(ErrMissingClientID, err)
 	c.Empty(trip)
 
-	trip, err = NewTrip("CLI123", "", "TRU123", "PAY123", 1234, startTime)
+	trip, err = NewTrip("CLI123", "", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
 	c.Equal(ErrMissingPartnerID, err)
 	c.Empty(trip)
 
-	trip, err = NewTrip("CLI123", "PAR123", "", "PAY123", 1234, startTime)
+	trip, err = NewTrip("CLI123", "PAR123", "", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
 	c.Equal(ErrMissingTruckID, err)
 	c.Empty(trip)
 
-	trip, err = NewTrip("CLI123", "PAR123", "TRU123", "", 1234, startTime)
+	trip, err = NewTrip("CLI123", "PAR123", "TRU123", "", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
 	c.Equal(ErrMissingTransactionID, err)
 	c.Empty(trip)
 
-	trip, err = NewTrip("CLI123", "PAR123", "TRU123", "PAY123", -1, startTime)
+	trip, err = NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "http://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
+	c.Equal(ErrInvalidDepartureURL, err)
+	c.Empty(trip)
+
+	trip, err = NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
+	c.Equal(ErrMissingDepartureDirection, err)
+	c.Empty(trip)
+
+	trip, err = NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "http://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
+	c.Equal(ErrInvalidArrivalURL, err)
+	c.Empty(trip)
+
+	trip, err = NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "", 1234, startTime)
+	c.Equal(ErrMissingArrivalDirection, err)
+	c.Empty(trip)
+
+	trip, err = NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", -1, startTime)
 	c.Equal(ErrInvalidTripPrice, err)
 	c.Empty(trip)
 }
@@ -39,7 +55,7 @@ func TestNewTrip(t *testing.T) {
 
 	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
 	c.Nil(err)
 
 	c.NotEmpty(trip.TripID)
@@ -47,6 +63,10 @@ func TestNewTrip(t *testing.T) {
 	c.Equal("PAR123", trip.PartnerID)
 	c.Equal("TRU123", trip.TruckID)
 	c.Equal("PAY123", trip.TransactionID)
+	c.Equal("https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", trip.DepartureURL)
+	c.Equal("there", trip.DepartureDirection)
+	c.Equal("https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", trip.ArrivalURL)
+	c.Equal("over there", trip.ArrivalDirection)
 	c.Equal(float64(1234), trip.TripPrice)
 	c.Equal(0, trip.NaturalFlowStep)
 	c.False(trip.Finished)
@@ -64,7 +84,7 @@ func TestTrip_AddNaturalFlowPartnerEventFail(t *testing.T) {
 	c := require.New(t)
 	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
 	c.Nil(err)
 
 	// This is necessary to arrive to an event that cannot be triggered by partner
@@ -81,7 +101,7 @@ func TestTrip_AddNaturalFlowPartnerEvent(t *testing.T) {
 	c := require.New(t)
 	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
 	c.Nil(err)
 
 	err = trip.AddNaturalFlowPartnerEvent()
@@ -99,7 +119,7 @@ func TestTrip_AddNaturalFlowClientEventFail(t *testing.T) {
 	c := require.New(t)
 	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
 	c.Nil(err)
 
 	err = trip.AddNaturalFlowClientEvent()
@@ -110,7 +130,7 @@ func TestTrip_AddNaturalFlowClientEvent(t *testing.T) {
 	c := require.New(t)
 	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
 	c.Nil(err)
 
 	// This is necessary to arrive to an event that can be triggered by client
@@ -135,7 +155,7 @@ func TestTrip_AddTripDenialEventFail(t *testing.T) {
 	c := require.New(t)
 	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
 	c.Nil(err)
 
 	// This is necessary so the denial event cannot be triggered
@@ -150,7 +170,7 @@ func TestTrip_AddTripDenialEvent(t *testing.T) {
 	c := require.New(t)
 	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
 	c.Nil(err)
 
 	err = trip.AddTripDenialEvent("sorry bro")
@@ -169,7 +189,7 @@ func TestTrip_AddTripCancellationEventFail(t *testing.T) {
 	c := require.New(t)
 	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
 	c.Nil(err)
 
 	// This is necessary so the cancellation event cannot be triggered
@@ -186,7 +206,7 @@ func TestTrip_AddTripCancellationEvent(t *testing.T) {
 	c := require.New(t)
 	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
 	c.Nil(err)
 
 	err = trip.AddTripCancellationEvent("sorry bro", users.UserTypeClient)
@@ -205,7 +225,7 @@ func TestTrip_AddReportEventFail(t *testing.T) {
 	c := require.New(t)
 	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
 	c.Nil(err)
 
 	err = trip.AddReportEvent("", users.UserTypeClient)
@@ -216,7 +236,7 @@ func TestTrip_AddReportEvent(t *testing.T) {
 	c := require.New(t)
 	startTime := time.Now()
 
-	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", 1234, startTime)
+	trip, err := NewTrip("CLI123", "PAR123", "TRU123", "PAY123", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "there", "https://maps.app.goo.gl/BNbVqV8PfoYAn1q58", "over there", 1234, startTime)
 	c.Nil(err)
 
 	err = trip.AddReportEvent("some minions attacked me", users.UserTypePartner)

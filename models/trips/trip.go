@@ -5,6 +5,7 @@ import (
 	events "kargo-back/models/events"
 	users "kargo-back/models/users"
 	"kargo-back/shared/random"
+	urlValidator "kargo-back/shared/url-validator"
 	"time"
 )
 
@@ -14,6 +15,12 @@ const (
 )
 
 var (
+	googleMapsDomains = []string{
+		"https://maps.app.goo.gl/",
+		"https://www.google.com/maps/place/",
+		"https://maps.apple.com/",
+	}
+
 	// ErrMissingClientID error when client_id is missing
 	ErrMissingClientID = errors.New("missing client id parameter")
 	// ErrMissingPartnerID error when the partner_id is missing
@@ -24,32 +31,44 @@ var (
 	ErrMissingTransactionID = errors.New("missing transaction id parameter")
 	// ErrMissingMessage error when the message is missing
 	ErrMissingMessage = errors.New("missing message parameter")
+	// ErrMissingDepartureDirection error when the departure direction is missing
+	ErrMissingDepartureDirection = errors.New("missing departure direction parameter")
+	// ErrMissingArrivalDirection error when the arrival direction is missing
+	ErrMissingArrivalDirection = errors.New("missing arrival direction parameter")
 	// ErrInvalidTripPrice error when an invalid trip price is given
 	ErrInvalidTripPrice = errors.New("invalid trip price parameter")
 	// ErrEventNotAuthorized error when user is not authorized for event
 	ErrEventNotAuthorized = errors.New("user is not authorized for event")
 	// ErrInvalidStartTime error when an invalid start time is given
 	ErrInvalidStartTime = errors.New("invalid start time parameter")
+	// ErrInvalidDepartureURL error when a invalid departure url is given
+	ErrInvalidDepartureURL = errors.New("invalid departure url")
+	// ErrInvalidArrivalURL error when a invalid departure url is given
+	ErrInvalidArrivalURL = errors.New("invalid arrival url")
 )
 
 // Trip is the struct handler for a trip
 type Trip struct {
-	TripID          string                `json:"trip_id"`
-	ClientID        string                `json:"client_id"`
-	PartnerID       string                `json:"partner_id"`
-	TruckID         string                `json:"truck_id"`
-	TransactionID   string                `json:"transaction_id"`
-	TripPrice       float64               `json:"trip_price"`
-	NaturalFlowStep int                   `json:"natural_flow_step"`
-	Finished        bool                  `json:"finished"`
-	EventsHistory   []events.EventHistory `json:"events_history"`
-	CreationDate    time.Time             `json:"creation_date"`
-	UpdateDate      time.Time             `json:"update_date"`
-	StartTime       time.Time             `json:"start_time"`
+	TripID             string                `json:"trip_id"`
+	ClientID           string                `json:"client_id"`
+	PartnerID          string                `json:"partner_id"`
+	TruckID            string                `json:"truck_id"`
+	TransactionID      string                `json:"transaction_id"`
+	DepartureURL       string                `json:"departure_url"`
+	DepartureDirection string                `json:"departure_direction"`
+	ArrivalURL         string                `json:"arrival_url"`
+	ArrivalDirection   string                `json:"arrival_direction"`
+	TripPrice          float64               `json:"trip_price"`
+	NaturalFlowStep    int                   `json:"natural_flow_step"`
+	Finished           bool                  `json:"finished"`
+	EventsHistory      []events.EventHistory `json:"events_history"`
+	CreationDate       time.Time             `json:"creation_date"`
+	UpdateDate         time.Time             `json:"update_date"`
+	StartTime          time.Time             `json:"start_time"`
 }
 
 // NewTrip returns truck struct with given input
-func NewTrip(clientID, partnerID, truckID, transactionID string, tripPrice float64, startTime time.Time) (*Trip, error) {
+func NewTrip(clientID, partnerID, truckID, transactionID, departureURL, departureDirection, arrivalURL, arrivalDirection string, tripPrice float64, startTime time.Time) (*Trip, error) {
 	if clientID == "" {
 		return nil, ErrMissingClientID
 	}
@@ -70,15 +89,35 @@ func NewTrip(clientID, partnerID, truckID, transactionID string, tripPrice float
 		return nil, ErrInvalidTripPrice
 	}
 
+	if departureDirection == "" {
+		return nil, ErrMissingDepartureDirection
+	}
+
+	if arrivalDirection == "" {
+		return nil, ErrMissingArrivalDirection
+	}
+
+	if !isValidGoogleMapsURL(departureURL) {
+		return nil, ErrInvalidDepartureURL
+	}
+
+	if !isValidGoogleMapsURL(arrivalURL) {
+		return nil, ErrInvalidArrivalURL
+	}
+
 	// NaturalFlowStep starts with 0 by default which is the first index for the NaturalFlowSteps slice
 	// This field will be used for knowing in which step the trip is in without needing to check the event history
 	return &Trip{
-		TripID:        random.GenerateID(TripIDPrefix, random.StandardBitSize),
-		ClientID:      clientID,
-		PartnerID:     partnerID,
-		TruckID:       truckID,
-		TransactionID: transactionID,
-		TripPrice:     tripPrice,
+		TripID:             random.GenerateID(TripIDPrefix, random.StandardBitSize),
+		ClientID:           clientID,
+		PartnerID:          partnerID,
+		TruckID:            truckID,
+		TransactionID:      transactionID,
+		DepartureURL:       departureURL,
+		DepartureDirection: departureDirection,
+		ArrivalURL:         arrivalURL,
+		ArrivalDirection:   arrivalDirection,
+		TripPrice:          tripPrice,
 		EventsHistory: []events.EventHistory{
 			events.EventHistory{
 				Event:    events.EventTruckSelection,
@@ -90,6 +129,16 @@ func NewTrip(clientID, partnerID, truckID, transactionID string, tripPrice float
 		CreationDate: time.Now(),
 		UpdateDate:   time.Now(),
 	}, nil
+}
+
+func isValidGoogleMapsURL(rawURL string) bool {
+	for _, googleMapsDomain := range googleMapsDomains {
+		if urlValidator.IsValidURLOfGivenDomain(rawURL, googleMapsDomain) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // AddNaturalFlowPartnerEvent adds partner triggered natural flow event

@@ -180,7 +180,7 @@ func apiGatewayHandler(ctx context.Context, request events.APIGatewayProxyReques
 		return errResponse, nil
 	}
 
-	trip, err := models.NewTrip(tripReq.clientID, tripReq.partnerID, tripReq.truckID, tripReq.transactionID, tripPrice, startTime)
+	trip, err := models.NewTrip(tripReq.clientID, tripReq.partnerID, tripReq.truckID, tripReq.transactionID, body.Get("departure_url"), body.Get("departure_direction"), body.Get("arrival_url"), body.Get("arrival_direction"), tripPrice, startTime)
 	if err != nil {
 		return apigateway.NewErrorResponse(400, err), nil
 	}
