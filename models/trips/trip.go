@@ -19,6 +19,7 @@ var (
 		"https://maps.app.goo.gl/",
 		"https://www.google.com/maps/place/",
 		"https://maps.apple.com/",
+		"https://goo.gl/maps/",
 	}
 
 	// ErrMissingClientID error when client_id is missing
